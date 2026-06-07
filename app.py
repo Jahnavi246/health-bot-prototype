@@ -617,7 +617,7 @@ st.warning(condition_data)
 
 st.markdown("### 🍛 Comprehensive 7-Day Diet Schedule")
 
-st.write("To maximize dietary co
+st.write("To maximize dietary consistency, follow this macro-balanced structural template optimized for **{age_group}** dynamics:")
 
 This is a sophisticated implementation of a Rule-Based Health & Lifestyle Awareness AI. You have built a robust structured system using Streamlit and Python that categorizes users into specific demographic "buckets" (Child, Teenager, Adult, Senior) and cross-references them with health conditions and keyword-driven logic.
 
