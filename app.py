@@ -1,3 +1,5 @@
+
+```python
 import streamlit as st
 import re
 
@@ -100,43 +102,34 @@ BASE_NUTRITION = {
     }
 }
 
-# Specific rules for health concerns
+# =========================================================================
+# 2. HEALTH CONDITIONS DATABASE (FROM HANDWRITTEN SHEET b34f0876-1131-45ff-8e3b-36f642de263b)
+# =========================================================================
 CLINICAL_RULES = {
-    "Normal": {
+    "Normal / Baseline": {
         "advice": "Keep maintaining a great, balanced, age-appropriate health routine!",
-        "modifiers": {}
+        "avoid_add": [],
+        "swap_rules": {}
     },
     "Diabetes (Sugar)": {
-        "advice": "⚠️ **Diabetes Protocol:** Strictly avoid all white sugar, maida, and refined white rice. Replace white rice with Foxtail Millet or Brown Rice, and chapatis with Jowar or Bajra rotis. Prioritize high-fiber non-starchy vegetables (okra, bitter gourd, ivy gourd) and ensure a 15-minute post-meal walk.",
-        "avoid_add": ["White sugar", "White rice", "Maida", "Potato", "Ice cream", "Fruit juices"],
+        "advice": "⚠️ **Diabetes Protocol:** Avoid white sugar, maida, and refined white rice entirely. Prioritize complex carbs like Foxtail Millet or Jowar. Restrict heavy starches and high-sugar fruits.",
+        "avoid_add": ["White sugar", "White rice", "Maida", "Potato", "Fizzy fruit juices", "Ice cream"],
         "swap_rules": {
             "rice": "brown rice / foxtail millet (sugar control)",
             "rice gruel": "barley water (sugar control)",
             "Roti": "Jowar Roti (low GI)",
             "chapati": "Jowar/Bajra Roti (low GI)",
             "chapatis": "Jowar Rotis",
-            "jaggery": "unsweetened stevia / raw nuts",
-            "sweet": "unsweetened / low-sugar",
+            "jaggery": "unsweetened organic stevia / raw nuts",
+            "sweet": "unsweetened / low-sugar option",
             "semiya": "foxtail millet vermicelli (unsweetened)"
         }
     },
-    "PCOD": {
-        "advice": "⚠️ **PCOD Protocol (Decoupled from Diabetes):** Focus on restoring ovarian insulin sensitivity. Eliminate all commercial dairy products and high-IGF elements. Incorporate healthy fats like raw flaxseeds, chia seeds, and pumpkin seeds. Ensure regular resistance training to build muscle mass.",
-        "avoid_add": ["Commercial milk", "Full-fat dairy", "Bakery items", "Soy products", "High-fat red meat"],
-        "swap_rules": {
-            "milk": "almond/coconut milk",
-            "curd": "dairy-free almond curd",
-            "dairy": "vegan alternatives",
-            "butter": "cold-pressed olive oil",
-            "ghee": "flaxseed oil",
-            "cheese": "grilled tofu"
-        }
-    },
     "Hypertension (BP)": {
-        "advice": "⚠️ **Hypertension Protocol:** Strictly restrict sodium intake to under 1500mg daily. Completely avoid commercial pickles, salted papads, packaged snacks, and canned soups. Focus on potassium-rich foods (coconut water, ash gourd, banana) to lower blood pressure.",
-        "avoid_add": ["Pickles", "Papads", "Canned soups", "Baking soda", "Table salt", "Processed cheese"],
+        "advice": "⚠️ **Hypertension Protocol:** Restrict dietary sodium strictly. Remove all packaging-heavy foods, pickles, papads, and namkeens. Focus on high-potassium foods (potassium stabilizes blood vessel pressure).",
+        "avoid_add": ["Table salt", "Commercial pickles", "Salted papads", "Processed cheese", "Salted snacks"],
         "swap_rules": {
-            "salt": "zero-sodium potassium salt substitute",
+            "salt": "zero-sodium herb substitute",
             "chana": "unsalted roasted chana",
             "nuts": "unsalted raw almonds",
             "curd": "unsalted thin curd",
@@ -144,126 +137,231 @@ CLINICAL_RULES = {
             "dal": "low-sodium unsalted dal"
         }
     },
-    "Uterine Fibroids": {
-        "advice": "⚠️ **Uterine Fibroids Protocol:** Estrogen dominance accelerates fibroid tissue progression. Strictly eliminate red meat, full-fat dairy, and alcohol. Optimize liver detoxification by adding heavy cruciferous vegetables (cooked broccoli, cabbage, brussels sprouts) which contain Indole-3-Carbinol to bind and excrete excess estrogen.",
-        "avoid_add": ["Red meat", "Pork", "Lamb", "Full-fat dairy", "Unfermented soy", "Excessive caffeine"],
+    "Tuberculosis (TB)": {
+        "advice": "⚠️ **Tuberculosis Protocol:** High-protein, nutrient-dense diet is mandatory to offset muscle wasting. Increase consumption of healthy fats (ghee, seeds) and easily absorbable minerals.",
+        "avoid_add": ["Refined oil", "Alcohol", "Raw unpasteurized milk", "Fasting", "Carbonated drinks"],
         "swap_rules": {
-            "vegetable": "cruciferous vegetable (broccoli/cabbage)",
-            "veggies": "cruciferous greens (kale/broccoli)",
-            "chicken": "steamed white fish (estrogen friendly)",
-            "paneer": "steamed organic tofu (low estrogen)"
-        }
-    },
-    "Post-Heart Attack": {
-        "advice": "⚠️ **Cardiac Rehab Protocol:** Enforce clinical-grade cardiovascular protection. Strictly eliminate all saturated fats, trans-fats, re-heated oils, and saturated dairy. Restrict sodium strictly. Ensure heavy intake of soluble beta-glucan fibers (Oats) and anti-inflammatory Omega-3 fatty acids (soaked walnuts, flaxseeds). Workouts must be low impact.",
-        "avoid_add": ["Re-heated oil", "Vanaspati ghee", "Butter", "Red meat", "Processed meats", "High-salt items"],
-        "swap_rules": {
-            "rice": "soluble oats fiber (cardiac support)",
-            "Roti": "oats-wheat chapati (Omega-3 rich)",
-            "ghee": "cold-pressed flaxseed oil",
-            "butter": "avocado mash",
-            "chicken": "Omega-3 rich boiled fish"
-        }
-    },
-    "Nausea / Vomiting / Stomach Pain": {
-        "advice": "⚠️ **Gastrointestinal Distress Protocol:** Allow maximum mechanical rest to the gastric lining. Follow a strict, easy-to-digest Bland/BRAT diet (Bananas, soft white Rice, Applesauce, Toast). Absolutely eliminate all raw vegetables, fats, spices, and dairy. Sip warm ginger water to naturally block gastric emetic receptors.",
-        "avoid_add": ["Spices", "Chili powder", "Butter", "Ghee", "Milk", "Cheese", "Fats", "Raw vegetables"],
-        "swap_rules": {
-            "Breakfast": "Soft cooked white rice with diluted thin curd (or warm ginger water)",
-            "Lunch": "Mashed soft yellow moong dal khichdi (no ghee, no spices, no oil)",
-            "Dinner": "Double-boiled thin rice gruel with a tiny pinch of salt",
-            "Snack": "Soft ripe banana or stewed peeled applesauce",
-            "curd": "water-diluted thin curd",
-            "veggies": "soft carrots (boiled & mashed)",
-            "paneer": "boiled soft tofu cubes"
-        }
-    },
-    "Headache / Migraine": {
-        "advice": "⚠️ **Migraine/Headache Protocol:** Prevent neurogenic vascular triggers. Strictly purge all vasoactive amines: aged cheeses (high in tyramine), cured meats (nitrites), MSG-heavy processed foods, and artificial sweeteners (aspartame). Prioritize heavy magnesium sources (pumpkin seeds, flaxseeds, leafy greens) to stabilize cranial blood vessels.",
-        "avoid_add": ["Aged cheese", "Cured meats", "MSG", "Chinese sauces", "Artificial sweeteners", "Vinegar", "Chocolate"],
-        "swap_rules": {
-            "cheese": "freshly made paneer",
-            "peanuts": "magnesium-rich pumpkin seeds",
-            "Snack": "A handful of raw pumpkin seeds",
-            "chapatis": "magnesium-dense whole wheat chapatis"
+            "rice": "protein-enriched brown rice (with dal mix)",
+            "Snack": "High-protein seed mix & double eggs (if non-veg) or paneer",
+            "water": "warm turmeric water",
+            "fruit": "nutrient-dense banana with dry fruits"
         }
     },
     "Thyroid": {
-        "advice": "⚠️ **Thyroid Protocol:** Regulate core metabolic pathways. Strictly avoid raw goitrogenic vegetables (uncooked cabbage, raw kale, uncooked cauliflower, raw broccoli) which inhibit thyroid peroxidase. Bake or steam these foods entirely to neutralize goitrogens. Prioritize selenium and iodine sources.",
-        "avoid_add": ["Raw cabbage", "Raw broccoli", "Raw cauliflower", "Raw kale", "Excess soy protein"],
+        "advice": "⚠️ **Thyroid Protocol:** Regulate your metabolism. Strictly restrict raw goitrogenic vegetables (like raw cabbage, raw cauliflower, raw kale). Fully cooking, baking, or steaming these elements destroys goitrogenic enzymes.",
+        "avoid_add": ["Raw cabbage", "Raw broccoli", "Raw cauliflower", "Raw kale", "Unfermented soy"],
         "swap_rules": {
             "salad": "cooked carrot beetroot stir-fry",
             "veggies": "thoroughly steamed/cooked vegetables",
             "vegetable": "fully cooked gourd vegetable",
-            "peanuts": "selenium-rich brazil nuts or walnuts"
+            "peanuts": "selenium-rich walnuts"
+        }
+    },
+    "Chickenpox": {
+        "advice": "⚠️ **Chickenpox Protocol:** Emphasize soft, cool, easily chewable, and non-acidic foods to soothe potential oral lesions and lesions in the GI tract. Maximize lysine-rich foods.",
+        "avoid_add": ["Chili powder", "Raw citrus fruits", "Salty chips", "Hot spicy curries", "Tough fibrous meat"],
+        "swap_rules": {
+            "Breakfast": "Cool ragi malt or oats porridge with milk",
+            "Snack": "Cool mashed banana or sweet coconut water",
+            "Lunch": "Soft curd rice (cool, not hot)",
+            "Dinner": "Mashed soft dal with soft-cooked rice"
+        }
+    },
+    "Headache / Migraine": {
+        "advice": "⚠️ **Headache/Migraine Protocol:** Remove vascular triggers. Avoid all amine-rich foods (aged cheeses), cured meats, MSG, and aspartame. Focus on high-magnesium items to stabilize intracranial blood vessels.",
+        "avoid_add": ["Aged cheese", "Nitrite-cured meats", "MSG / Chinese sauces", "Artificial sweeteners", "Excess cocoa"],
+        "swap_rules": {
+            "cheese": "fresh homemade paneer",
+            "peanuts": "magnesium-rich pumpkin seeds",
+            "Snack": "Magnesium-dense pumpkin seeds",
+            "chapatis": "magnesium-dense whole wheat chapatis"
+        }
+    },
+    "PCOD": {
+        "advice": "⚠️ **PCOD Protocol:** Focus heavily on clearing androgens and normalizing insulin-like growth factors (IGF-1). Eliminate commercial dairy products. Focus on raw flaxseeds and pumpkin seeds.",
+        "avoid_add": ["Commercial milk", "Full-fat commercial dairy", "Processed white flour", "Soy isolates"],
+        "swap_rules": {
+            "milk": "almond/coconut milk",
+            "curd": "dairy-free almond curd",
+            "dairy": "vegan plant-based alternatives",
+            "butter": "cold-pressed olive oil",
+            "ghee": "flaxseed oil",
+            "cheese": "grilled firm tofu"
+        }
+    },
+    "Malaria": {
+        "advice": "⚠️ **Malaria Protocol:** High-carbohydrate, high-protein, easily digestible foods are required to assist the liver and fight heavy infection. Ensure rigorous hydration with electrolytes.",
+        "avoid_add": ["Heavy red meat", "Deep fried foods", "High-fiber raw salad", "Spicy masalas"],
+        "swap_rules": {
+            "Lunch": "Soft-cooked white rice with simple yellow dal soup (easy digesting)",
+            "Snack": "Fresh tender coconut water or sweet apple puree",
+            "Dinner": "Rice gruel with a touch of ghee and soft carrots"
+        }
+    },
+    "Stomach Pain / Motions / Vomiting / Nausea": {
+        "advice": "⚠️ **Gastrointestinal Distress Protocol (Acute GI Rest):** Adopt a highly restricted Bland/BRAT regimen (Bananas, soft Rice, Applesauce, Toast). Eliminate raw items, heavy fats, dairy, and strong spices to minimize gastric peristalsis.",
+        "avoid_add": ["Raw salads", "Chili powder", "Commercial milk", "Heavy oils", "Ghee", "Fibrous lentils"],
+        "swap_rules": {
+            "Breakfast": "Diluted thin warm ragi water or single dry toast",
+            "Lunch": "Double-cooked soft white rice with diluted thin curd or rasam water",
+            "Dinner": "Light watery rice gruel with a tiny pinch of salt",
+            "Snack": "Soft ripe banana or stewed peeled applesauce",
+            "curd": "highly diluted curd whey water",
+            "veggies": "soft carrots (peeled, boiled & mashed)",
+            "paneer": "soft steamed tofu cubes (very light)"
+        }
+    },
+    "Uterine Fibroids (Ribroids)": {
+        "advice": "⚠️ **Uterine Fibroids Protocol:** Estrogen dominance fuels fibroid tissues. Eliminate saturated animal fats and red meats. Increase cruciferous options (must be fully cooked/steamed) containing indole-3-carbinol to bind toxic estrogens.",
+        "avoid_add": ["Red meat", "Full-fat dairy", "Alcohol", "Processed refined sugars"],
+        "swap_rules": {
+            "vegetable": "steamed/cooked cruciferous vegetable (broccoli/cabbage)",
+            "veggies": "steamed broccoli and cauliflower",
+            "chicken": "steamed skinless fish",
+            "paneer": "steamed organic tofu"
+        }
+    },
+    "Ovarian Cyst": {
+        "advice": "⚠️ **Ovarian Cyst Protocol:** Maintain strict hormonal balance. Lower estrogen burden while boosting cellular insulin receptors. Integrate anti-inflammatory fats (omega-3 from seeds).",
+        "avoid_add": ["Refined carbohydrates", "Saturated animal fats", "Unfermented soy", "Sugar syrups"],
+        "swap_rules": {
+            "milk": "chia seed coconut infusion",
+            "ghee": "cold-pressed avocado oil",
+            "sweet": "steamed apple slices with cinnamon"
+        }
+    },
+    "Seizures / Fits (Sizer/Fids)": {
+        "advice": "⚠️ **Seizures / Fits Protocol:** Support neurotransmitter stability. Restrict high-GI glucose spikes that cause erratic neuronal activity. Focus on clean fats and proteins.",
+        "avoid_add": ["High-fructose corn syrup", "Refined sugar desserts", "MSG", "Caffeine-heavy energy drinks"],
+        "swap_rules": {
+            "rice": "high-protein cooked quinoa / scrambled egg whites",
+            "bread": "almond flour keto-bread substitute",
+            "Roti": "almond-flaxseed low-carb flatbread",
+            "Snack": "Handful of healthy raw walnuts and pumpkin seeds"
         }
     },
     "Weight Loss": {
-        "advice": "⚠️ **Weight Loss Protocol:** Optimize basal satiety limits. Drink 1 glass of unsweetened Ragi Java prepared with diluted buttermilk 20 minutes before lunch and dinner. Replace high-GI evening carbs with light cucumber sticks or raw roasted makhana.",
-        "avoid_add": ["Sugary sweets", "Midnight heavy snacks", "Refined deep-fried pakodas", "Fizzy sodas"],
+        "advice": "⚠️ **Weight Loss Protocol:** Enhance satiety and regulate metabolic speed. Drink 1 glass of unsweetened ragi ambali mixed with buttermilk 20 minutes before core meals to block mechanical overeating.",
+        "avoid_add": ["Deep-fried items", "Bakery sweets", "Late night calorie dense meals", "Sugary tea/coffee"],
         "swap_rules": {
             "sweet": "roasted unsalted makhana",
             "banana": "fiber-dense green apples",
             "rice": "high-protein quinoa or foxtail millet",
             "upma": "multi-vegetable oats upma"
         }
+    },
+    "Weight Gain / Malnutrition": {
+        "advice": "⚠️ **Weight Gain / Malnutrition Protocol:** Ensure nutrient density and a healthy caloric surplus. Integrate healthy lipids (ghee, nuts, seeds, full-fat dairy) and structured high-quality protein matrices.",
+        "avoid_add": ["Junk trans-fats", "Carbonated diet sodas", "Empty sugar calories", "Oiled roadside fried items"],
+        "swap_rules": {
+            "buttermilk": "creamy whole milk",
+            "thin": "thick and nutrient-dense",
+            "Snack": "Ragi porridge prepared with whole milk, honey, and nuts",
+            "Lunch": "Ghee-roasted grains served with dense dal/paneer and cream"
+        }
+    },
+    "Cold / Cough": {
+        "advice": "⚠️ **Cold / Cough Protocol:** Soothe inflamed bronchial tracts. Eliminate all chilled beverages, ice creams, and excessive mucus-producing dairy. Emphasize warming bioactives (gingerols, curcumin, piperine).",
+        "avoid_add": ["Chilled drinks", "Ice creams", "Yogurt / Curd from fridge", "Cold raw salads"],
+        "swap_rules": {
+            "curd": "warm peppercorn clear rasam",
+            "buttermilk": "warm ginger herbal infusion",
+            "Snack": "Roasted makhana with organic turmeric and black pepper",
+            "Dinner": "Steaming hot vegetable soup with ginger and garlic"
+        }
     }
 }
 
+# Priority mapping to resolve conflicting rules (e.g. GI distress overrides high-fiber Diabetes rules)
+CLINICAL_PRIORITY = {
+    "Normal / Baseline": 0,
+    "Diabetes (Sugar)": 1,
+    "Hypertension (BP)": 1,
+    "Thyroid": 1,
+    "PCOD": 1,
+    "Uterine Fibroids (Ribroids)": 1,
+    "Ovarian Cyst": 1,
+    "Seizures / Fits (Sizer/Fids)": 1,
+    "Weight Loss": 1,
+    "Tuberculosis (TB)": 2,
+    "Malaria": 2,
+    "Chickenpox": 2,
+    "Cold / Cough": 2,
+    "Weight Gain / Malnutrition": 2,
+    "Stomach Pain / Motions / Vomiting / Nausea": 3 # Acute GI has the highest override priority
+}
+
 # =========================================================================
-# 2. CLINICAL DIET GENERATOR (DYNAMIC COMPILER & MODIFIER ENGINE)
+# 3. CLINICAL DIET GENERATOR (MULTIPLE-SELECT CONFLICT RESOLUTION)
 # =========================================================================
-def compile_clinical_diet_plan(age, diet_pref, health_issue):
-    # Fetch base demographic menu
+def compile_clinical_diet_plan(age, diet_pref, selected_issues):
+    # Fetch base demographic menu directly by age and diet preference (fixes previous loop error)
     base = BASE_NUTRITION[age][diet_pref]
     
     # Clone to prevent modifying static dictionary reference
     compiled_days = {}
     for day, meals in base["days"].items():
         compiled_days[day] = meals.copy()
-        
-    rule_data = CLINICAL_RULES[health_issue]
-    
-    # Apply pathological replacements if condition is not "Normal"
-    if health_issue != "Normal":
-        swap_rules = rule_data["swap_rules"]
-        
-        for day, meals in compiled_days.items():
-            for meal_type, meal_desc in meals.items():
-                
-                # Check for absolute layout replacement overrides (e.g., BRAT overrides for Nausea)
-                if meal_type in swap_rules:
-                    compiled_days[day][meal_type] = swap_rules[meal_type]
-                else:
-                    # Apply keyword regex text replacements
-                    temp_desc = meal_desc
-                    for old_word, new_word in swap_rules.items():
-                        # Case-insensitive replacement
-                        pattern = re.compile(re.escape(old_word), re.IGNORECASE)
-                        temp_desc = pattern.sub(new_word, temp_desc)
-                    compiled_days[day][meal_type] = temp_desc
-                    
-    # Generate avoid list
+
+    # Resolve pathologies in priority order so highest overrides (e.g. Gastro BRAT) win at the end
+    active_issues = [issue for issue in selected_issues if issue != "Normal / Baseline"]
+    if not active_issues:
+        active_issues = ["Normal / Baseline"]
+    else:
+        # Sort based on the clinical priority values
+        active_issues.sort(key=lambda x: CLINICAL_PRIORITY.get(x, 1))
+
+    combined_advice = []
+    combined_avoid = set()
+
+    for issue in active_issues:
+        rule_data = CLINICAL_RULES[issue]
+        if issue != "Normal / Baseline":
+            combined_advice.append(rule_data["advice"])
+            # Merge avoid rules
+            for item in rule_data.get("avoid_add", []):
+                combined_avoid.add(item)
+            
+            # Apply dynamic regex meal adjustments
+            swap_rules = rule_data.get("swap_rules", {})
+            for day, meals in compiled_days.items():
+                for meal_type, meal_desc in meals.items():
+                    # If the entire meal category is overridden (e.g. BRAT diet complete swaps)
+                    if meal_type in swap_rules:
+                        compiled_days[day][meal_type] = swap_rules[meal_type]
+                    else:
+                        temp_desc = meal_desc
+                        for old_word, new_word in swap_rules.items():
+                            pattern = re.compile(re.escape(old_word), re.IGNORECASE)
+                            temp_desc = pattern.sub(new_word, temp_desc)
+                        compiled_days[day][meal_type] = temp_desc
+
+    # Clean compile string advice
+    if not combined_advice:
+        final_advice = CLINICAL_RULES["Normal / Baseline"]["advice"]
+    else:
+        final_advice = "\n\n".join(combined_advice)
+
+    # Clean compile avoid list
     base_avoid = base["avoid"]
-    additional_avoid = rule_data.get("avoid_add", [])
-    if additional_avoid:
-        final_avoid = f"{base_avoid} AND strictly avoid: {', '.join(additional_avoid)}."
+    if combined_avoid:
+        final_avoid = f"{base_avoid} AND strictly avoid: {', '.join(sorted(list(combined_avoid)))}."
     else:
         final_avoid = base_avoid
-        
+
     return {
         "sleep": base["sleep_ideal"],
         "exercise": base["exercise"],
         "avoid": final_avoid,
         "days": compiled_days,
-        "advice": rule_data["advice"]
+        "advice": final_advice
     }
 
 # =========================================================================
-# 3. CHATBOT MULTI-KEYWORD REGEX MAPPER
+# 4. CHATBOT MULTI-KEYWORD MAPPER
 # =========================================================================
 EXTENDED_CHAT_RULES = {
-    ("gastric", "acidity", "reflux", "gas", "bloating", "stomach pain"): (
+    ("gastric", "acidity", "reflux", "gas", "bloating", "stomach pain", "motions", "vomiting", "nausea"): (
         "### 🤢 Gastric, Reflux & Stomach Pain Relief\n"
         "**🍛 Food Core:** Drink cold unsalted buttermilk with roasted cumin powder. Include alkaline ash gourd juice. Avoid raw red chili, citrus, and unsoaked heavy lentils.\n"
         "**🏃‍♂️ Movement:** Practice *Vajrasana* for 5-10 minutes post-meal to support digestion.\n"
@@ -281,39 +379,47 @@ EXTENDED_CHAT_RULES = {
         "**🏃‍♂️ Movement:** Walk for 15 minutes immediately after main meals to sweep glucose out of the blood stream."
     ),
     ("pcod", "pcos", "ovarian", "cyst", "irregular periods"): (
-        "### 🦋 PCOD Hormonal Recovery\n"
+        "### 🦋 PCOD & Ovarian Cyst Hormonal Recovery\n"
         "**🍛 Food Core:** Adopt low-GI ancient grains. Strictly eliminate commercial dairy (IGF-1 triggers). Consume pumpkin and flaxseeds to clear systemic androgens.\n"
         "**🏃‍♂️ Movement:** Moderate strength/resistance workouts 3 times a week to improve cellular insulin sensitivity."
     ),
-    ("fibroids", "uterine fibroids", "uterus", "heavy bleeding"): (
+    ("fibroids", "uterine fibroids", "uterus", "heavy bleeding", "ribroids"): (
         "### 🩸 Estrogen Detox & Fibroid Shrinkage\n"
         "**🍛 Food Core:** Heavily consume cooked cruciferous greens (broccoli, cabbage, kale) to leverage Indole-3-Carbinol for liver estrogen binding. Strictly avoid red meat and full-fat dairy."
-    ),
-    ("nausea", "vomiting", "sick", "throw up", "upset stomach"): (
-        "### 🤢 Nausea & Stomach Irritation Rescue\n"
-        "**🍛 Food Core:** Strictly follow the Bland BRAT regimen (Banana, Rice, Applesauce, Toast). Avoid all dairy, butter, oils, and hot chilies. Sip fresh warm ginger tea slowly."
     ),
     ("headache", "migraine", "throbbing", "migraines"): (
         "### 🧠 Headache & Migraine Trigger Elimination\n"
         "**🍛 Food Core:** Purge vasoactive compounds (aged cheese, nitrites in processed meats, MSG, aspartame). Eat magnesium-heavy pumpkin and pumpkin seeds."
     ),
-    ("thyroid", "hypothyroid", "tsh"): (
+    ("thyroid", "hypothyroid", "tsh", "thyriod", "thypoid"): (
         "### 🦋 Thyroid Metabolic Restoration\n"
         "**🍛 Food Core:** Eat selenium-dense brazil nuts or walnuts. Avoid raw uncooked crucifers (cabbage, kale) to safeguard TPO enzymes. Eat cooked grains."
     ),
     ("weight loss", "lose weight", "dieting", "fat loss"): (
         "### 📉 Sustainable Caloric Deficit\n"
         "**🍛 Food Core:** Consume unsweetened Ragi Java with buttermilk before meals to block mechanical overeating. Avoid evening refined snacks."
+    ),
+    ("seizures", "fits", "sizer", "fids"): (
+        "### 🧠 Neurotransmitter Stabilization (Seizures Protocol)\n"
+        "**🍛 Food Core:** Lower high-GI glucose spikes. Emphasize low-carb keto-friendly nutrition: high healthy fats (nuts, seeds) and balanced clean proteins. Avoid refined sugar and MSG."
+    ),
+    ("tb", "tuberculosis", "chickenpox", "malaria"): (
+        "### 🦠 Acute Infectious Pathology Recovery (TB, Malaria, Chickenpox)\n"
+        "**🍛 Food Core:** Prioritize high-protein absorption and cellular repair. Drink cool, soft fluids for Chickenpox, and high-energy broths for TB and Malaria. Avoid raw heavy fiber."
+    ),
+    ("malnutrition", "weight gain", "cold", "cough"): (
+        "### 🌡️ Cold, Cough & Malnutrition Interventions\n"
+        "**🍛 Food Core:** Incorporate warm bone broths or spiced rasam infusions for respiratory issues. For malnutrition, provide ghee, honey, whole milk, and seed powders."
     )
 }
 
 # =========================================================================
-# 4. STREAMLIT FRAMEWORK SETUP
+# 5. STREAMLIT FRAMEWORK SETUP
 # =========================================================================
 st.set_page_config(page_title="Demographic Clinical Diet Engine", page_icon="🤖", layout="wide")
 
-st.title("🤖 Rule-Based Multi-Generation Clinical Diet Engine")
-st.write("An advanced pathophysiological rules processor automating age-cohort dynamics, dietary restrictions, and split clinical menu swapping.")
+st.title("🤖 Multi-Select Multi-Generation Clinical Diet Engine")
+st.write("An advanced multi-select rules processor synthesizing overlapping pathologies derived from clinical reference b34f0876-1131-45ff-8e3b-36f642de263b.")
 
 # Interface Tabs
 tab1, tab2 = st.tabs(["📋 Clinical Lifestyle Assessment", "💬 Knowledge Chat Interrogator"])
@@ -331,17 +437,27 @@ with tab1:
             diet_pref = st.selectbox("👉 Select Dietary Preference Segment:", ["Vegetarian", "Non-Vegetarian"])
             sleep_hours = st.number_input("👉 Enter Patient Sleep Hours (Daily):", min_value=1, max_value=24, value=7, step=1)
         with col2:
-            health_issue = st.selectbox("👉 Select Primary Medical Concern:", list(CLINICAL_RULES.keys()))
+            # Multi-select input for choosing multiple pathologies simultaneously
+            health_issues = st.multiselect(
+                "👉 Select All Applicable Health Concerns (b34f0876-1131-45ff-8e3b-36f642de263b):",
+                options=list(CLINICAL_RULES.keys()),
+                default=["Normal / Baseline"]
+            )
             routine = st.selectbox("👉 Select Activity Profile Classification:", ["Sedentary", "Moderate Active", "Heavy Active"])
             
         submit_button = st.form_submit_button(label="⚡ Compile Demographically Modified Diet Plan")
 
     if submit_button:
-        # Generate personalized modified diet plan
-        result_plan = compile_clinical_diet_plan(age_group, diet_pref, health_issue)
+        # Standardize empty selection to normal baseline
+        if not health_issues:
+            health_issues = ["Normal / Baseline"]
+            
+        # Generate personalized, multi-condition modified diet plan
+        result_plan = compile_clinical_diet_plan(age_group, diet_pref, health_issues)
         
         st.markdown("---")
-        st.markdown(f"## 📋 Rule-Driven Health & Lifestyle Blueprint ({diet_pref} - {health_issue})")
+        st.markdown(f"## 📋 Rule-Driven Health & Lifestyle Blueprint ({diet_pref})")
+        st.write(f"**Synthesized Pathologies:** {', '.join(health_issues)}")
         
         # Validate sleep ranges
         sleep_comment = "✅ Current sleep duration satisfies demographic standards."
@@ -354,10 +470,12 @@ with tab1:
         # Display Metrics Blocks
         st.info(f"**⏰ Sleep Evaluation Status:** {sleep_comment}")
         st.success(f"**🏃‍♂️ Prescribed Activity Protocol:** {result_plan['exercise']}")
+        
+        # Display merged advice blocks sequentially
         st.warning(result_plan["advice"])
         
-        st.markdown("### 🍛 Modified 7-Day Clinical Diet Schedule")
-        st.write(f"The structural menus have been dynamically updated with specific clinical substitutions for **{age_group}** demands:")
+        st.markdown("### 🍛 Combined & Modified 7-Day Clinical Diet Schedule")
+        st.write(f"The structural menus have been dynamically synthesized and recursively adjusted for **{age_group}** requirements:")
         
         # Build layout grid
         table_data = []
@@ -379,7 +497,7 @@ with tab1:
 # =========================================================================
 with tab2:
     st.write("### 💬 Clinical Knowledge Bot")
-    st.caption("Ask specific metabolic or dietary questions (e.g., 'Diabetes guidelines', 'PCOD flaxseed benefits', 'BP rules').")
+    st.caption("Ask specific metabolic, infection, or general health questions (e.g., 'Diabetes rules', 'fits advice', 'malaria food guidelines').")
     
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -393,7 +511,7 @@ with tab2:
         with st.chat_message("user"):
             st.markdown(prompt)
             
-        bot_response = "🤖 I am a clinical rule assistant. Try asking about 'Diabetes', 'PCOD', 'Fibroids', 'Migraine', or 'Stomach Pain' to trigger target guidelines."
+        bot_response = "🤖 I am a clinical rule assistant. Try asking about 'Diabetes', 'PCOD', 'Fibroids', 'Seizures', 'Malaria', or 'TB' to trigger guidelines."
         
         normalized_query = prompt.lower()
         for key_tuple, descriptive_advice in EXTENDED_CHAT_RULES.items():
@@ -404,3 +522,5 @@ with tab2:
         with st.chat_message("assistant"):
             st.markdown(bot_response)
         st.session_state.messages.append({"role": "assistant", "content": bot_response})
+
+```
