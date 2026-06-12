@@ -1,198 +1,368 @@
-
 import streamlit as st
 import re
 
 # =========================================================================
-# 1. BACKEND DATABASE STRUCTURES (Assessment Form Engine)
+# 1. COMPREHENSIVE BASELINE HEALTH MATRIX (VEGETARIAN & NON-VEGETARIAN)
 # =========================================================================
 WEEK_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
-HEALTH_MATRIX = {
-    "Child (1-12)": {
-        "sleep_ideal": "9 to 11 hours",
-        "exercise": "60 minutes of active play daily (running, cycling, outdoor games).",
-        "avoid": "Packed artificially flavored juices, highly processed maida biscuits, and spicy roadside mixtures.",
-        "days": {
-            "Monday": {"Breakfast": "Ragi malt with milk & soft idli.", "Lunch": "Soft dal khichdi with ghee.", "Snack": "Banana or apple slices.", "Dinner": "Wheat upma with grated carrots."},
-            "Tuesday": {"Breakfast": "Millet porridge with a bit of jaggery.", "Lunch": "Curd rice with mashed carrots.", "Snack": "Homemade ragi biscuits.", "Dinner": "Soft paneer bhurji with a mini chapati."},
-            "Wednesday": {"Breakfast": "Boiled eggs or milk with fruit.", "Lunch": "Soft-cooked rice, tomato rasam, and soft potato cubes.", "Snack": "Stewed apple.", "Dinner": "Moong dal soup with broken wheat khichdi."},
-            "Thursday": {"Breakfast": "Ragi Java with a little milk.", "Lunch": "Vegetable khichdi with curd.", "Snack": "Roasted makhana (fox nuts).", "Dinner": "Soft vermicelli upma with peas."},
-            "Friday": {"Breakfast": "Oats porridge with mashed banana.", "Lunch": "Mashed rice, leafy green dal, and ghee.", "Snack": "Fresh curd with honey.", "Dinner": "Paneer cubes with soft wheat dahlia upma."},
-            "Saturday": {"Breakfast": "Wheat pancake (Dosa style) with milk.", "Lunch": "Sambar rice with soft-cooked pumpkin.", "Snack": "A handful of boiled sweet corn.", "Dinner": "Light vegetable clear soup and idli."},
-            "Sunday": {"Breakfast": "Ragi vermicelli sweet semiya.", "Lunch": "Soft rice, chicken clear soup (non-veg) OR thick paneer dal.", "Snack": "Fruit smoothie.", "Dinner": "Soft-cooked broken rice khichdi."}
+# Base menus optimized per Age Cohort & Diet Preference
+BASE_NUTRITION = {
+    "Youth (1-18)": {
+        "Vegetarian": {
+            "sleep_ideal": "9 to 11 hours",
+            "exercise": "60 minutes of active play daily (running, cycling, outdoor games).",
+            "avoid": "Packed artificially flavored juices, highly processed maida biscuits, and spicy roadside mixtures.",
+            "days": {
+                "Monday": {"Breakfast": "Ragi porridge with whole milk & soft idli.", "Lunch": "Soft dal khichdi with ghee and carrots.", "Snack": "Apple slices with a tiny bit of honey.", "Dinner": "Wheat upma with grated carrots."},
+                "Tuesday": {"Breakfast": "Millet porridge with organic jaggery.", "Lunch": "Curd rice with mashed carrots.", "Snack": "Homemade soft ragi biscuits.", "Dinner": "Soft paneer bhurji with a mini chapati."},
+                "Wednesday": {"Breakfast": "Warm oats porridge with milk and sliced bananas.", "Lunch": "Soft-cooked rice, tomato rasam, and soft potato cubes.", "Snack": "Stewed apple.", "Dinner": "Moong dal soup with broken wheat khichdi."},
+                "Thursday": {"Breakfast": "Ragi Java with a little milk and nuts.", "Lunch": "Vegetable khichdi with fresh curd.", "Snack": "Roasted makhana.", "Dinner": "Soft vermicelli upma with peas."},
+                "Friday": {"Breakfast": "Oats porridge with mashed banana.", "Lunch": "Mashed rice, leafy green dal, and ghee.", "Snack": "Fresh curd with honey.", "Dinner": "Paneer cubes with soft wheat dahlia upma."},
+                "Saturday": {"Breakfast": "Wheat pancake (Dosa style) with milk.", "Lunch": "Sambar rice with soft-cooked pumpkin.", "Snack": "A handful of boiled sweet corn.", "Dinner": "Light vegetable clear soup and idli."},
+                "Sunday": {"Breakfast": "Ragi vermicelli sweet semiya.", "Lunch": "Soft rice, thick paneer dal.", "Snack": "Fresh fruit smoothie.", "Dinner": "Soft-cooked broken rice khichdi with ghee."}
+            }
+        },
+        "Non-Vegetarian": {
+            "sleep_ideal": "9 to 11 hours",
+            "exercise": "60 minutes of active play daily (running, cycling, outdoor games).",
+            "avoid": "Packed artificially flavored juices, deep-fried chicken nuggets, and heavy processed meats.",
+            "days": {
+                "Monday": {"Breakfast": "Scrambled eggs (2 eggs) with soft toast.", "Lunch": "Soft dal khichdi with shredded chicken breast.", "Snack": "Apple slices with a tiny bit of honey.", "Dinner": "Wheat upma with soft chicken strips."},
+                "Tuesday": {"Breakfast": "Millet porridge with organic jaggery & one boiled egg.", "Lunch": "Curd rice with steamed mashed fish.", "Snack": "Homemade soft ragi biscuits.", "Dinner": "Soft chicken bhurji with a mini chapati."},
+                "Wednesday": {"Breakfast": "Boiled eggs with sliced bananas.", "Lunch": "Soft-cooked rice, chicken clear soup, and soft potato cubes.", "Snack": "Stewed apple.", "Dinner": "Moong dal soup with boiled egg whites."},
+                "Thursday": {"Breakfast": "Ragi Java with a little milk & scrambled eggs.", "Lunch": "Chicken khichdi with fresh curd.", "Snack": "Roasted makhana.", "Dinner": "Soft vermicelli upma with egg drop."},
+                "Friday": {"Breakfast": "Oats porridge with mashed banana & boiled egg.", "Lunch": "Mashed rice, chicken dal soup, and ghee.", "Snack": "Fresh curd with honey.", "Dinner": "Shredded chicken with soft wheat dahlia upma."},
+                "Saturday": {"Breakfast": "Wheat pancake (Dosa style) with milk and egg white.", "Lunch": "Sambar rice with soft boiled fish.", "Snack": "A handful of boiled sweet corn.", "Dinner": "Light chicken clear soup and idli."},
+                "Sunday": {"Breakfast": "Ragi vermicelli sweet semiya with a boiled egg.", "Lunch": "Soft rice, chicken clear soup.", "Snack": "Fresh fruit smoothie.", "Dinner": "Soft-cooked chicken khichdi."}
+            }
         }
     },
-    "Teenager (13-19)": {
-        "sleep_ideal": "8 to 10 hours",
-        "exercise": "60 minutes of physical activity (sports, running, strength training, or dancing).",
-        "avoid": "Carbonated soft drinks, instant noodles, deep-fried street food, and heavy bakery items.",
-        "days": {
-            "Monday": {"Breakfast": "Ragi Java with mixed nuts & boiled sprouts.", "Lunch": "Bajra rotis with dal and leafy green stir-fry.", "Snack": "Roasted Chana.", "Dinner": "Millet pulao with curd raita."},
-            "Tuesday": {"Breakfast": "Peanut butter whole wheat toast & banana.", "Lunch": "Brown rice, mixed vegetable sambar, and ivy gourd sabzi.", "Snack": "Boiled egg or sweet potato chat.", "Dinner": "Two chapatis with mixed vegetable curry."},
-            "Wednesday": {"Breakfast": "Millet Poha with roasted peanuts.", "Lunch": "Jowar roti with green moong dal and beetroot salad.", "Snack": "Fruit salad with pumpkin seeds.", "Dinner": "Soya bean curry with brown rice."},
-            "Thursday": {"Breakfast": "Oats omelette OR Moong dal chilla.", "Lunch": "Two whole wheat chapatis with chicken curry or paneer curry.", "Snack": "Thick buttermilk with cumin powder.", "Dinner": "Foxtail millet khichdi."},
-            "Friday": {"Breakfast": "Ragi malt smoothie with almonds.", "Lunch": "Brown rice, spinach dal, and cluster beans sabzi.", "Snack": "Roasted makhana.", "Dinner": "Whole wheat pasta with lots of veggies & paneer."},
-            "Saturday": {"Breakfast": "Sprouted chana salad with vegetable upma.", "Lunch": "Bajra roti with egg bhurji or thick chana masala.", "Snack": "Coconut water and a handful of walnuts.", "Dinner": "Jeera rice with dal fry."},
-            "Sunday": {"Breakfast": "Multi-grain paneer paratha with curd.", "Lunch": "Millet biryani (veg/chicken) with cucumber raita.", "Snack": "A glass of milk with dry fruits.", "Dinner": "Light oats upma with vegetables."}
+    "Adult (19-59)": {
+        "Vegetarian": {
+            "sleep_ideal": "7 to 9 hours",
+            "exercise": "30-45 minutes of moderate exercise 5 days a week (brisk walking, gym, yoga).",
+            "avoid": "Excessive white sugar, refined flour (maida), highly processed packaged snacks, and late-night heavy meals.",
+            "days": {
+                "Monday": {"Breakfast": "Unsweetened Ragi Java with buttermilk & sprouts.", "Lunch": "Jowar Roti, a bowl of Toor Dal, and ladyfinger (bhindi) sabzi.", "Snack": "A handful of roasted chana.", "Dinner": "Light Foxtail Millet Khichdi with curd."},
+                "Tuesday": {"Breakfast": "Millet Poha with roasted peanuts and lemon juice.", "Lunch": "Brown rice, mixed vegetable sambar, and palak stir-fry.", "Snack": "One seasonal fruit (Guava or Apple).", "Dinner": "Two whole wheat chapatis with paneer bhurji."},
+                "Wednesday": {"Breakfast": "Oats Idli with mint and coriander chutney.", "Lunch": "Bajra Roti, green moong dal, and ivy gourd sabzi.", "Snack": "Plain buttermilk with roasted cumin powder.", "Dinner": "Broken wheat (dalia) upma with carrots and peas."},
+                "Thursday": {"Breakfast": "Moong Dal Chilla (savory pancake) with curd.", "Lunch": "Jowar Roti, chana masala, and cucumber salad.", "Snack": "Soaked almonds and walnuts.", "Dinner": "Little Millet curd rice with stir-fried veggies."},
+                "Friday": {"Breakfast": "Ragi porridge with a dash of jaggery and almonds.", "Lunch": "Brown rice, tomato rasam, and paneer curry.", "Snack": "Roasted makhana.", "Dinner": "Mixed vegetable clear soup with grilled tofu/paneer."},
+                "Saturday": {"Breakfast": "Vegetable Upma made from multi-millet semolina.", "Lunch": "Whole wheat chapatis, ridge gourd curry, and dal.", "Snack": "Coconut water.", "Dinner": "Foxtail Millet pulao with raita."},
+                "Sunday": {"Breakfast": "Healthy Multi-grain Dosa with ginger chutney.", "Lunch": "Brown rice or Jowar Roti, sprouted methi dal.", "Snack": "A cup of green tea or spiced buttermilk.", "Dinner": "Light oats porridge or vegetable khichdi."}
+            }
+        },
+        "Non-Vegetarian": {
+            "sleep_ideal": "7 to 9 hours",
+            "exercise": "30-45 minutes of moderate exercise 5 days a week (brisk walking, gym, strength training).",
+            "avoid": "Excessive white sugar, deep-fried chicken, highly processed meats, and trans-fats.",
+            "days": {
+                "Monday": {"Breakfast": "Two scrambled eggs with spinach and whole wheat toast.", "Lunch": "Jowar Roti, yellow dal, and chicken breast curry.", "Snack": "A handful of roasted chana.", "Dinner": "Light Foxtail Millet chicken khichdi with curd."},
+                "Tuesday": {"Breakfast": "Millet Poha with boiled egg whites.", "Lunch": "Brown rice, mixed vegetable sambar, and grilled fish.", "Snack": "One seasonal fruit (Guava or Apple).", "Dinner": "Two whole wheat chapatis with chicken minced kheema."},
+                "Wednesday": {"Breakfast": "Oats omelette with chopped tomatoes and coriander.", "Lunch": "Bajra Roti, green moong dal, and chicken cubes.", "Snack": "Plain buttermilk with cumin powder.", "Dinner": "Broken wheat (dalia) upma with soft chicken strips."},
+                "Thursday": {"Breakfast": "Moong Dal Chilla with egg drop and curd.", "Lunch": "Jowar Roti, chicken masala, and cucumber salad.", "Snack": "Soaked almonds and walnuts.", "Dinner": "Little Millet egg curd rice."},
+                "Friday": {"Breakfast": "Ragi porridge with boiled eggs.", "Lunch": "Brown rice, tomato rasam, and steamed fish.", "Snack": "Roasted makhana.", "Dinner": "Mixed vegetable clear soup with shredded chicken breast."},
+                "Saturday": {"Breakfast": "Egg bhurji (2 eggs) with single chapati.", "Lunch": "Whole wheat chapatis, chicken curry, and dal.", "Snack": "Coconut water.", "Dinner": "Foxtail Millet chicken pulao with raita."},
+                "Sunday": {"Breakfast": "Healthy Multi-grain Dosa with chicken mince stuffing.", "Lunch": "Brown rice, simple fish curry, and curd.", "Snack": "A cup of green tea or spiced buttermilk.", "Dinner": "Light oats porridge with egg white drop."}
+            }
         }
     },
-    "Adult (20-59)": {
-        "sleep_ideal": "7 to 9 hours",
-        "exercise": "30-45 minutes of moderate exercise 5 days a week (brisk walking, gym, yoga).",
-        "avoid": "Excessive white sugar, refined flour (maida), highly processed packaged snacks, and late-night heavy meals.",
-        "days": {
-            "Monday": {"Breakfast": "Unsweetened Ragi Java with buttermilk & sprouts.", "Lunch": "Jowar Roti, a bowl of Toor Dal, and ladyfinger (bhindi) sabzi.", "Snack": "A handful of roasted chana.", "Dinner": "Light Foxtail Millet Khichdi with curd."},
-            "Tuesday": {"Breakfast": "Millet Poha with roasted peanuts and lemon juice.", "Lunch": "Brown rice, mixed vegetable sambar, and palak stir-fry.", "Snack": "One seasonal fruit (Guava or Apple).", "Dinner": "Two whole wheat chapatis with paneer bhurji."},
-            "Wednesday": {"Breakfast": "Oats Idli with mint and coriander chutney.", "Lunch": "Bajra Roti, green moong dal, and ivy gourd sabzi.", "Snack": "Plain buttermilk with roasted cumin powder.", "Dinner": "Broken wheat (dalia) upma with carrots and peas."},
-            "Thursday": {"Breakfast": "Moong Dal Chilla (savory pancake) with curd.", "Lunch": "Jowar Roti, chana masala, and cucumber salad.", "Snack": "Soaked almonds and walnuts.", "Dinner": "Little Millet curd rice with a small side of stir-fried veggies."},
-            "Friday": {"Breakfast": "Ragi porridge with a dash of jaggery and almonds.", "Lunch": "Brown rice, tomato rasam, and boiled egg or paneer curry.", "Snack": "Roasted makhana (foxnuts).", "Dinner": "Mixed vegetable clear soup with grilled tofu/paneer."},
-            "Saturday": {"Breakfast": "Vegetable Upma made from multi-millet semolina.", "Lunch": "Whole wheat chapatis, ridge gourd curry, and dal.", "Snack": "Coconut water.", "Dinner": "Foxtail Millet pulao with raita."},
-            "Sunday": {"Breakfast": "Healthy Multi-grain Dosa with ginger chutney.", "Lunch": "Brown rice or Jowar Roti, clean fish curry or sprouted methi dal.", "Snack": "A cup of green tea or spiced buttermilk.", "Dinner": "Light oats porridge or vegetable khichdi."}
-        }
-    },
-    "Senior Citizen (60+)": {
-        "sleep_ideal": "7 to 8 hours",
-        "exercise": "20-30 minutes of low-impact movement (gentle walking, joint mobility stretches, light pranayama).",
-        "avoid": "Hard-to-chew vegetables, heavily oiled pickles, high-sodium papads, and gas-forming heavy lentils.",
-        "days": {
-            "Monday": {"Breakfast": "Warm Ragi Ambali (porridge) with thin buttermilk.", "Lunch": "Soft-cooked rice, ridge gourd dal, and curd.", "Snack": "Stewed apple (soft).", "Dinner": "Thin vegetable khichdi (easy to digest)."},
-            "Tuesday": {"Breakfast": "Soft oats porridge with milk.", "Lunch": "Mashed brown rice with bottle gourd (lauki) curry and moong dal.", "Snack": "Warm papaya pieces.", "Dinner": "Soft broken wheat dahlia upma."},
-            "Wednesday": {"Breakfast": "Well-cooked idli with light tomato chutney.", "Lunch": "Soft jowar roti soaked in dal, with mashed ash gourd sabzi.", "Snack": "A cup of warm milk with turmeric.", "Dinner": "Clear vegetable broth with soft boiled paneer."},
-            "Thursday": {"Breakfast": "Finger millet flour rava upma (very soft).", "Lunch": "Mashed rice, curd, and a side of soft boiled ivy gourd.", "Snack": "One ripe banana.", "Dinner": "Moong dal soup with an idli."},
-            "Friday": {"Breakfast": "Warm ragi malt (sweet version with little jaggery).", "Lunch": "Soft rice, drumstick sambar, and mashed carrot subzi.", "Snack": "Thin curd water (lassi without ice).", "Dinner": "Oats porridge with no sugar, spices or oil."},
-            "Saturday": {"Breakfast": "Soft-cooked vermicelli with carrots.", "Lunch": "Soft whole wheat chapati mashed inside yellow dal.", "Snack": "Stewed pear or warm papaya.", "Dinner": "Little millet khichdi cooked with extra water."},
-            "Sunday": {"Breakfast": "Moong dal green chilla (soft texturized).", "Lunch": "Mashed rice, simple fish broth (if non-veg) OR light cumin flavored rasam and curd.", "Snack": "Coconut water.", "Dinner": "Warm vegetable stock soup with soft idli."}
+    "Senior (60-80+)": {
+        "Vegetarian": {
+            "sleep_ideal": "7 to 8 hours",
+            "exercise": "20-30 minutes of low-impact movement (gentle walking, joint mobility stretches, light pranayama).",
+            "avoid": "Hard-to-chew vegetables, heavily oiled pickles, high-sodium papads, and gas-forming heavy lentils.",
+            "days": {
+                "Monday": {"Breakfast": "Warm Ragi Ambali (porridge) with thin buttermilk.", "Lunch": "Soft-cooked rice, ridge gourd dal, and curd.", "Snack": "Stewed apple (soft).", "Dinner": "Thin vegetable khichdi (easy to digest)."},
+                "Tuesday": {"Breakfast": "Soft oats porridge with milk.", "Lunch": "Mashed brown rice with bottle gourd (lauki) curry and moong dal.", "Snack": "Warm papaya pieces.", "Dinner": "Soft broken wheat dahlia upma."},
+                "Wednesday": {"Breakfast": "Well-cooked idli with light tomato chutney.", "Lunch": "Soft jowar roti soaked in dal, with mashed ash gourd sabzi.", "Snack": "A cup of warm milk with turmeric.", "Dinner": "Clear vegetable broth with soft boiled paneer."},
+                "Thursday": {"Breakfast": "Finger millet flour rava upma (very soft).", "Lunch": "Mashed rice, curd, and a side of soft boiled ivy gourd.", "Snack": "One ripe banana.", "Dinner": "Moong dal soup with an idli."},
+                "Friday": {"Breakfast": "Warm ragi malt (sweet version with little jaggery).", "Lunch": "Soft rice, drumstick sambar, and mashed carrot subzi.", "Snack": "Thin curd water.", "Dinner": "Oats porridge with no sugar, spices or oil."},
+                "Saturday": {"Breakfast": "Soft-cooked vermicelli with carrots.", "Lunch": "Soft whole wheat chapati mashed inside yellow dal.", "Snack": "Stewed pear or warm papaya.", "Dinner": "Little millet khichdi cooked with extra water."},
+                "Sunday": {"Breakfast": "Moong dal green chilla (soft texturized).", "Lunch": "Mashed rice, light cumin flavored rasam and curd.", "Snack": "Coconut water.", "Dinner": "Warm vegetable stock soup with soft idli."}
+            }
+        },
+        "Non-Vegetarian": {
+            "sleep_ideal": "7 to 8 hours",
+            "exercise": "20-30 minutes of low-impact movement (gentle walking, joint mobility stretches, breathing exercises).",
+            "avoid": "Hard-to-chew meats, highly spiced non-veg curries, heavily oiled pickles, and processed cold cuts.",
+            "days": {
+                "Monday": {"Breakfast": "Scrambled egg whites with soft warm milk.", "Lunch": "Soft-cooked rice with fish bone broth and curd.", "Snack": "Stewed apple (soft).", "Dinner": "Thin chicken khichdi (easy to digest)."},
+                "Tuesday": {"Breakfast": "Soft oats porridge with milk and egg drop.", "Lunch": "Mashed brown rice with chicken dal broth.", "Snack": "Warm papaya pieces.", "Dinner": "Soft dahlia with shredded chicken."},
+                "Wednesday": {"Breakfast": "Well-cooked idli with soft egg bhurji.", "Lunch": "Soft jowar roti soaked in chicken soup.", "Snack": "A cup of warm milk with turmeric.", "Dinner": "Clear chicken broth with boiled egg whites."},
+                "Thursday": {"Breakfast": "Finger millet flour soft upma with egg white crumbs.", "Lunch": "Mashed rice, curd, and boiled soft fish.", "Snack": "One ripe banana.", "Dinner": "Moong dal soup with a soft chicken idli."},
+                "Friday": {"Breakfast": "Warm ragi malt with egg whites.", "Lunch": "Soft rice, simple fish broth, and mashed carrot subzi.", "Snack": "Thin curd water.", "Dinner": "Oats porridge cooked in water with egg drop."},
+                "Saturday": {"Breakfast": "Soft-cooked vermicelli with egg white drop.", "Lunch": "Soft chapati mashed inside chicken stew.", "Snack": "Stewed pear.", "Dinner": "Little millet chicken khichdi cooked with extra water."},
+                "Sunday": {"Breakfast": "Moong dal chilla with soft chicken mince.", "Lunch": "Mashed rice, light chicken clear soup and curd.", "Snack": "Coconut water.", "Dinner": "Warm chicken stock soup with soft idli."}
+            }
         }
     }
 }
 
-CONDITION_ADVICE = {
-    "None": "Keep maintaining a great, balanced health routine!",
-    "Diabetes": "⚠️ **Diabetes Rule:** Avoid white sugar and refined white rice entirely. Substitute with Foxtail Millet or Jowar rotis. Prioritize high-fiber vegetables like okra, bitter gourd, and ivy gourd. Walk for 15 minutes immediately after meals.",
-    "Hypertension (BP)": "⚠️ **Hypertension Rule:** Strictly limit table salt. Completely avoid commercial pickles, salted papads, frozen meals, and packed namkeens. Focus on potassium-rich options like coconut water, bottle gourd juice, and bananas.",
-    "Gastric Issues / Acid Reflux": "⚠️ **Gastric Health Rule:** Avoid raw spices, red chili powder, coffee, and carbonated beverages. Do not leave long gaps between meals. Include cooling items like thin cold buttermilk, ash gourd juice, and well-cooked Ragi Ambali. Avoid heavy gas-forming lentils like whole rajma.",
-    "Heart Health": "⚠️ **Cardiovascular Health Rule:** Eliminate deep-fried items, trans-fats, re-heated oils, and saturated fats (vanaspati/heavy butter). Focus on heart-healthy soluble fibers like oats and millets. Consume omega-3 choices like soaked walnuts and flaxseeds daily.",
-    "Thyroid": "⚠️ **Thyroid Rule:** Avoid raw goitrogenic vegetables like uncooked cabbage, cauliflower, kale, and broccoli. Ensure adequate iodine/selenium from whole grains and soaked nuts. Focus on active weight management.",
-    "Weight Loss": "⚠️ **Weight Loss Rule:** Maintain a structured calorie deficit. Drink 1 glass of **Ragi Java prepared with buttermilk** before your major meals to promote satiety. Swap heavy carb dinners out for clear vegetable soups or a light protein bowl."
+# Specific rules for health concerns
+CLINICAL_RULES = {
+    "Normal": {
+        "advice": "Keep maintaining a great, balanced, age-appropriate health routine!",
+        "modifiers": {}
+    },
+    "Diabetes (Sugar)": {
+        "advice": "⚠️ **Diabetes Protocol:** Strictly avoid all white sugar, maida, and refined white rice. Replace white rice with Foxtail Millet or Brown Rice, and chapatis with Jowar or Bajra rotis. Prioritize high-fiber non-starchy vegetables (okra, bitter gourd, ivy gourd) and ensure a 15-minute post-meal walk.",
+        "avoid_add": ["White sugar", "White rice", "Maida", "Potato", "Ice cream", "Fruit juices"],
+        "swap_rules": {
+            "rice": "brown rice / foxtail millet (sugar control)",
+            "rice gruel": "barley water (sugar control)",
+            "Roti": "Jowar Roti (low GI)",
+            "chapati": "Jowar/Bajra Roti (low GI)",
+            "chapatis": "Jowar Rotis",
+            "jaggery": "unsweetened stevia / raw nuts",
+            "sweet": "unsweetened / low-sugar",
+            "semiya": "foxtail millet vermicelli (unsweetened)"
+        }
+    },
+    "PCOD": {
+        "advice": "⚠️ **PCOD Protocol (Decoupled from Diabetes):** Focus on restoring ovarian insulin sensitivity. Eliminate all commercial dairy products and high-IGF elements. Incorporate healthy fats like raw flaxseeds, chia seeds, and pumpkin seeds. Ensure regular resistance training to build muscle mass.",
+        "avoid_add": ["Commercial milk", "Full-fat dairy", "Bakery items", "Soy products", "High-fat red meat"],
+        "swap_rules": {
+            "milk": "almond/coconut milk",
+            "curd": "dairy-free almond curd",
+            "dairy": "vegan alternatives",
+            "butter": "cold-pressed olive oil",
+            "ghee": "flaxseed oil",
+            "cheese": "grilled tofu"
+        }
+    },
+    "Hypertension (BP)": {
+        "advice": "⚠️ **Hypertension Protocol:** Strictly restrict sodium intake to under 1500mg daily. Completely avoid commercial pickles, salted papads, packaged snacks, and canned soups. Focus on potassium-rich foods (coconut water, ash gourd, banana) to lower blood pressure.",
+        "avoid_add": ["Pickles", "Papads", "Canned soups", "Baking soda", "Table salt", "Processed cheese"],
+        "swap_rules": {
+            "salt": "zero-sodium potassium salt substitute",
+            "chana": "unsalted roasted chana",
+            "nuts": "unsalted raw almonds",
+            "curd": "unsalted thin curd",
+            "sambar": "low-sodium unsalted sambar",
+            "dal": "low-sodium unsalted dal"
+        }
+    },
+    "Uterine Fibroids": {
+        "advice": "⚠️ **Uterine Fibroids Protocol:** Estrogen dominance accelerates fibroid tissue progression. Strictly eliminate red meat, full-fat dairy, and alcohol. Optimize liver detoxification by adding heavy cruciferous vegetables (cooked broccoli, cabbage, brussels sprouts) which contain Indole-3-Carbinol to bind and excrete excess estrogen.",
+        "avoid_add": ["Red meat", "Pork", "Lamb", "Full-fat dairy", "Unfermented soy", "Excessive caffeine"],
+        "swap_rules": {
+            "vegetable": "cruciferous vegetable (broccoli/cabbage)",
+            "veggies": "cruciferous greens (kale/broccoli)",
+            "chicken": "steamed white fish (estrogen friendly)",
+            "paneer": "steamed organic tofu (low estrogen)"
+        }
+    },
+    "Post-Heart Attack": {
+        "advice": "⚠️ **Cardiac Rehab Protocol:** Enforce clinical-grade cardiovascular protection. Strictly eliminate all saturated fats, trans-fats, re-heated oils, and saturated dairy. Restrict sodium strictly. Ensure heavy intake of soluble beta-glucan fibers (Oats) and anti-inflammatory Omega-3 fatty acids (soaked walnuts, flaxseeds). Workouts must be low impact.",
+        "avoid_add": ["Re-heated oil", "Vanaspati ghee", "Butter", "Red meat", "Processed meats", "High-salt items"],
+        "swap_rules": {
+            "rice": "soluble oats fiber (cardiac support)",
+            "Roti": "oats-wheat chapati (Omega-3 rich)",
+            "ghee": "cold-pressed flaxseed oil",
+            "butter": "avocado mash",
+            "chicken": "Omega-3 rich boiled fish"
+        }
+    },
+    "Nausea / Vomiting / Stomach Pain": {
+        "advice": "⚠️ **Gastrointestinal Distress Protocol:** Allow maximum mechanical rest to the gastric lining. Follow a strict, easy-to-digest Bland/BRAT diet (Bananas, soft white Rice, Applesauce, Toast). Absolutely eliminate all raw vegetables, fats, spices, and dairy. Sip warm ginger water to naturally block gastric emetic receptors.",
+        "avoid_add": ["Spices", "Chili powder", "Butter", "Ghee", "Milk", "Cheese", "Fats", "Raw vegetables"],
+        "swap_rules": {
+            "Breakfast": "Soft cooked white rice with diluted thin curd (or warm ginger water)",
+            "Lunch": "Mashed soft yellow moong dal khichdi (no ghee, no spices, no oil)",
+            "Dinner": "Double-boiled thin rice gruel with a tiny pinch of salt",
+            "Snack": "Soft ripe banana or stewed peeled applesauce",
+            "curd": "water-diluted thin curd",
+            "veggies": "soft carrots (boiled & mashed)",
+            "paneer": "boiled soft tofu cubes"
+        }
+    },
+    "Headache / Migraine": {
+        "advice": "⚠️ **Migraine/Headache Protocol:** Prevent neurogenic vascular triggers. Strictly purge all vasoactive amines: aged cheeses (high in tyramine), cured meats (nitrites), MSG-heavy processed foods, and artificial sweeteners (aspartame). Prioritize heavy magnesium sources (pumpkin seeds, flaxseeds, leafy greens) to stabilize cranial blood vessels.",
+        "avoid_add": ["Aged cheese", "Cured meats", "MSG", "Chinese sauces", "Artificial sweeteners", "Vinegar", "Chocolate"],
+        "swap_rules": {
+            "cheese": "freshly made paneer",
+            "peanuts": "magnesium-rich pumpkin seeds",
+            "Snack": "A handful of raw pumpkin seeds",
+            "chapatis": "magnesium-dense whole wheat chapatis"
+        }
+    },
+    "Thyroid": {
+        "advice": "⚠️ **Thyroid Protocol:** Regulate core metabolic pathways. Strictly avoid raw goitrogenic vegetables (uncooked cabbage, raw kale, uncooked cauliflower, raw broccoli) which inhibit thyroid peroxidase. Bake or steam these foods entirely to neutralize goitrogens. Prioritize selenium and iodine sources.",
+        "avoid_add": ["Raw cabbage", "Raw broccoli", "Raw cauliflower", "Raw kale", "Excess soy protein"],
+        "swap_rules": {
+            "salad": "cooked carrot beetroot stir-fry",
+            "veggies": "thoroughly steamed/cooked vegetables",
+            "vegetable": "fully cooked gourd vegetable",
+            "peanuts": "selenium-rich brazil nuts or walnuts"
+        }
+    },
+    "Weight Loss": {
+        "advice": "⚠️ **Weight Loss Protocol:** Optimize basal satiety limits. Drink 1 glass of unsweetened Ragi Java prepared with diluted buttermilk 20 minutes before lunch and dinner. Replace high-GI evening carbs with light cucumber sticks or raw roasted makhana.",
+        "avoid_add": ["Sugary sweets", "Midnight heavy snacks", "Refined deep-fried pakodas", "Fizzy sodas"],
+        "swap_rules": {
+            "sweet": "roasted unsalted makhana",
+            "banana": "fiber-dense green apples",
+            "rice": "high-protein quinoa or foxtail millet",
+            "upma": "multi-vegetable oats upma"
+        }
+    }
 }
 
 # =========================================================================
-# 2. CHATBOT RULES: DYNAMIC MULTI-KEYWORD LIFESTYLE ENGINE
+# 2. CLINICAL DIET GENERATOR (DYNAMIC COMPILER & MODIFIER ENGINE)
+# =========================================================================
+def compile_clinical_diet_plan(age, diet_pref, health_issue):
+    # Fetch base demographic menu
+    base = BASE_NUTRITION[age][diet_pref]
+    
+    # Clone to prevent modifying static dictionary reference
+    compiled_days = {}
+    for day, meals in base["days"].items():
+        compiled_days[day] = meals.copy()
+        
+    rule_data = CLINICAL_RULES[health_issue]
+    
+    # Apply pathological replacements if condition is not "Normal"
+    if health_issue != "Normal":
+        swap_rules = rule_data["swap_rules"]
+        
+        for day, meals in compiled_days.items():
+            for meal_type, meal_desc in meals.items():
+                
+                # Check for absolute layout replacement overrides (e.g., BRAT overrides for Nausea)
+                if meal_type in swap_rules:
+                    compiled_days[day][meal_type] = swap_rules[meal_type]
+                else:
+                    # Apply keyword regex text replacements
+                    temp_desc = meal_desc
+                    for old_word, new_word in swap_rules.items():
+                        # Case-insensitive replacement
+                        pattern = re.compile(re.escape(old_word), re.IGNORECASE)
+                        temp_desc = pattern.sub(new_word, temp_desc)
+                    compiled_days[day][meal_type] = temp_desc
+                    
+    # Generate avoid list
+    base_avoid = base["avoid"]
+    additional_avoid = rule_data.get("avoid_add", [])
+    if additional_avoid:
+        final_avoid = f"{base_avoid} AND strictly avoid: {', '.join(additional_avoid)}."
+    else:
+        final_avoid = base_avoid
+        
+    return {
+        "sleep": base["sleep_ideal"],
+        "exercise": base["exercise"],
+        "avoid": final_avoid,
+        "days": compiled_days,
+        "advice": rule_data["advice"]
+    }
+
+# =========================================================================
+# 3. CHATBOT MULTI-KEYWORD REGEX MAPPER
 # =========================================================================
 EXTENDED_CHAT_RULES = {
-    ("gastric", "acidity", "reflux", "gas", "bloating"): (
-        "### 🤢 Managing Gastric Issues & Acid Reflux\n"
-        "**🍛 Food Fix:** Drink cold buttermilk mixed with roasted cumin (jeera) powder. Include alkaline items like ash gourd juice or well-cooked Ragi Ambali. Avoid raw red chili powder, citrus fruits on an empty stomach, and heavy gas-forming lentils like whole rajma.\n\n"
-        "**🏃‍♂️ Exercise Strategy:** Avoid bending or intense lifting immediately after eating. Practice *Vajrasana* (Adamantine Pose) for 5-10 minutes post-meals to assist intestinal motility.\n\n"
-        "**⏰ Sleep Rule:** Sleep with your head elevated by 4-6 inches. Never lie flat within 2 hours of dinner to prevent stomach acid from washing up into the food pipe."
+    ("gastric", "acidity", "reflux", "gas", "bloating", "stomach pain"): (
+        "### 🤢 Gastric, Reflux & Stomach Pain Relief\n"
+        "**🍛 Food Core:** Drink cold unsalted buttermilk with roasted cumin powder. Include alkaline ash gourd juice. Avoid raw red chili, citrus, and unsoaked heavy lentils.\n"
+        "**🏃‍♂️ Movement:** Practice *Vajrasana* for 5-10 minutes post-meal to support digestion.\n"
+        "**⏰ Rest:** Elevate head by 4 inches during sleep. Do not lie down within 2 hours of a meal."
     ),
-    ("heart", "bp", "hypertension", "cardiovascular", "cholesterol"): (
-        "### 🫀 Cardiovascular Health & Pressure Balance\n"
-        "**🍛 Food Fix:** Cut out processed snacks (packed namkeens, instant noodles) and heavy table salt. Replace refined white grains with high-fiber grains like oats, Jowar, and Foxtail Millets. Snack on 4-5 soaked almonds or walnuts for healthy fats.\n\n"
-        "**🏃‍♂️ Exercise Strategy:** Aim for 30 minutes of brisk, steady cardio (walking, slow cycling) 5 days a week. Avoid sudden, explosive high-intensity weight strain if BP is unregulated.\n\n"
-        "**⏰ Sleep Rule:** Ensure 7-8 hours of continuous rest. Chronic sleep deprivation spikes stress hormones like cortisol, forcing blood vessels to constrict and raising blood pressure."
+    ("heart", "bp", "hypertension", "cardiovascular", "cholesterol", "heart attack"): (
+        "### 🫀 Hypertension & Cardiac Rehab\n"
+        "**🍛 Food Core:** Strictly restrict table salt. Avoid processed pickles, papads, and re-heated vegetable oils. Focus on potassium (coconut water, banana) and soluble beta-glucan fibers (oats).\n"
+        "**🏃‍♂️ Movement:** 30 minutes of low-impact walking. Strictly avoid sudden heavy strain.\n"
+        "**⏰ Rest:** Ensure 7-8 hours. Sleep deprivation spikes vascular cortisol levels."
     ),
     ("diabetes", "sugar", "glucose", "insulin"): (
-        "### 🩸 Blood Glucose & Insulin Optimization\n"
-        "**🍛 Food Fix:** Swap out high-glycemic carbohydrates like white rice or maida with Jowar rotis, Bajra, or broken brown dahlia. Prioritize high-fiber bitter vegetables (bitter gourd, okra, ivy gourd).\n\n"
-        "**🏃‍♂️ Exercise Strategy:** Build muscle through resistance exercises or take a quick 15-minute steady walk *immediately* after lunch and dinner to clear glucose out of the blood stream.\n\n"
-        "**⏰ Sleep Rule:** Poor sleep patterns create insulin resistance, making your body shift into a state where fat storage is prioritized and blood sugar fluctuates wildly."
+        "### 🩸 Diabetes & Insulin Regulation\n"
+        "**🍛 Food Core:** Replace refined white rice and maida with Jowar rotis or Foxtail Millet. Focus on high-fiber bitter vegetables (bitter gourd, okra, ivy gourd).\n"
+        "**🏃‍♂️ Movement:** Walk for 15 minutes immediately after main meals to sweep glucose out of the blood stream."
     ),
-    ("thyroid", "hypothyroid"): (
-        "### 🦋 Thyroid Metabolic Regulation\n"
-        "**🍛 Food Fix:** Avoid consuming raw, uncooked goitrogenic elements like cabbage, cauliflower, kale, or broccoli. Use whole grains, and ensure regular selenium and iodine from soaked nuts and seeds.\n\n"
-        "**🏃‍♂️ Exercise Strategy:** Focus on active muscle mass restoration through moderate weight training and yoga poses like *Sarvangasana* to stimulate neck circulation.\n\n"
-        "**⏰ Sleep Rule:** Maintain a strict circadian rhythm. Thyroid hormones align deeply with growth hormone production occurring during deep sleep states."
+    ("pcod", "pcos", "ovarian", "cyst", "irregular periods"): (
+        "### 🦋 PCOD Hormonal Recovery\n"
+        "**🍛 Food Core:** Adopt low-GI ancient grains. Strictly eliminate commercial dairy (IGF-1 triggers). Consume pumpkin and flaxseeds to clear systemic androgens.\n"
+        "**🏃‍♂️ Movement:** Moderate strength/resistance workouts 3 times a week to improve cellular insulin sensitivity."
     ),
-    ("weight loss", "lose weight", "dieting", "fat loss", "slim"): (
-        "### 📉 Structured Weight Loss Engine\n"
-        "**🔋 Core Strategy:** Create a clean, sustainable caloric deficit without skipping vital meals.\n\n"
-        "**🥗 Food Tweaks:** Drink a warm glass of **Ragi Java prepared with thin buttermilk** 20 minutes before lunch or dinner. It keeps you full and stops overeating. Replace evening tea snacks with roasted makhana or cucumber salad.\n\n"
-        "**🏃‍♂️ Exercise:** Combine full-body strength movements 3 times a week with daily steps (target 8,000 to 10,000 steps).\n\n"
-        "**⚠️ Hidden Defect:** If you only sleep 5 hours, your body secretes more *Ghrelin* (the hunger hormone) and suppresses *Leptin* (the fullness signal), causing uncontrollable cravings for high-sugar foods."
+    ("fibroids", "uterine fibroids", "uterus", "heavy bleeding"): (
+        "### 🩸 Estrogen Detox & Fibroid Shrinkage\n"
+        "**🍛 Food Core:** Heavily consume cooked cruciferous greens (broccoli, cabbage, kale) to leverage Indole-3-Carbinol for liver estrogen binding. Strictly avoid red meat and full-fat dairy."
     ),
-    ("weight gain", "gain weight", "bulk", "muscle gain"): (
-        "### 📈 Structured Weight & Muscle Gain Engine\n"
-        "**🔋 Core Strategy:** Build healthy mass through a clean caloric surplus combined with lean muscle cultivation.\n\n"
-        "**🥗 Food Tweaks:** Increase nutrient density instead of just eating junk food. Drink **Ragi malt mixed with whole milk**, jaggery, and crushed dry fruits twice a day. Incorporate paneer, sprouted chana, boiled eggs, and bananas into your daily routine.\n\n"
-        "**🏃‍♂️ Exercise:** Focus on progressive resistance weight training (push-ups, squats, weighted movements) to ensure calories transform into lean muscle rather than simple fat deposits.\n\n"
-        "**⏰ Sleep Factor:** Muscles heal and expand while you are sleeping! Target 8 solid hours for optimal growth hormone distribution."
+    ("nausea", "vomiting", "sick", "throw up", "upset stomach"): (
+        "### 🤢 Nausea & Stomach Irritation Rescue\n"
+        "**🍛 Food Core:** Strictly follow the Bland BRAT regimen (Banana, Rice, Applesauce, Toast). Avoid all dairy, butter, oils, and hot chilies. Sip fresh warm ginger tea slowly."
     ),
-    ("ragi", "finger millet", "java", "ambali"): (
-        "### 🌾 Special Profile: Ragi (Finger Millet)\n"
-        "* **Benefits:** Incredible plant-based source of calcium and iron. Exceptional for cooling your digestive system down and managing diabetes due to slow-digesting fibers.\n"
-        "* **How to Prepare:** Eat it as thin Ragi Java with buttermilk for cooling/weight loss, or drink it thick with warm milk and a pinch of jaggery for weight gain/children's growth."
+    ("headache", "migraine", "throbbing", "migraines"): (
+        "### 🧠 Headache & Migraine Trigger Elimination\n"
+        "**🍛 Food Core:** Purge vasoactive compounds (aged cheese, nitrites in processed meats, MSG, aspartame). Eat magnesium-heavy pumpkin and pumpkin seeds."
     ),
-    ("millet", "millets", "jowar", "bajra", "foxtail"): (
-        "### 🌾 Standard Millet Classifications\n"
-        "Replacing white rice/refined flour with complex millets like **Jowar (Sorghum)**, **Bajra (Pearl Millet)**, or **Foxtail Millet** introduces rich magnesium and slow-release low-GI fuel. Always soak whole millets for 4-6 hours before boiling to break down anti-nutrients and ease stomach digestion."
+    ("thyroid", "hypothyroid", "tsh"): (
+        "### 🦋 Thyroid Metabolic Restoration\n"
+        "**🍛 Food Core:** Eat selenium-dense brazil nuts or walnuts. Avoid raw uncooked crucifers (cabbage, kale) to safeguard TPO enzymes. Eat cooked grains."
     ),
-    ("sleep", "insomnia", "tired", "fatigue", "night"): (
-        "### 🌙 Sleep Framework Rules\n"
-        "* **The Effect:** Restful sleep (7-9 hours) repairs tissue, flushes metabolic waste out of your brain, and balances metabolic speed.\n"
-        "* **The Defect:** Missing sleep triggers high blood pressure, compromises immune defense, accelerates skin aging, and causes severe next-day mental fatigue and brain fog."
-    ),
-    ("exercise", "walking", "gym", "workout", "sitting", "sedentary"): (
-        "### 🏃‍♂️ Physical Activity Parameters\n"
-        "* **The Effect:** Daily activity enhances insulin receptivity, lowers bad cholesterol (LDL), protects your heart walls, and shoots feel-good endorphins into your system.\n"
-        "* **The Defect:** Continuous prolonged sitting (sedentary behavior) slows blood flow, reduces bone density over time, decreases caloric expenditure, and causes lower back and hip stiffness."
+    ("weight loss", "lose weight", "dieting", "fat loss"): (
+        "### 📉 Sustainable Caloric Deficit\n"
+        "**🍛 Food Core:** Consume unsweetened Ragi Java with buttermilk before meals to block mechanical overeating. Avoid evening refined snacks."
     )
 }
 
 # =========================================================================
-# 3. APPLICATION SETUP & LAYOUT TABS
+# 4. STREAMLIT FRAMEWORK SETUP
 # =========================================================================
-st.set_page_config(page_title="Rule-Based Health AI Engine", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="Demographic Clinical Diet Engine", page_icon="🤖", layout="wide")
 
-st.title("🤖 Rule-Based Driven Health and Lifestyle Awareness AI Chatbot")
-st.write("An automated rules engine analyzing age metrics, lifestyle routines, and health history parameters.")
+st.title("🤖 Rule-Based Multi-Generation Clinical Diet Engine")
+st.write("An advanced pathophysiological rules processor automating age-cohort dynamics, dietary restrictions, and split clinical menu swapping.")
 
-# Creating Application Interface Tabs
-tab1, tab2 = st.tabs(["📋 Personalized Lifestyle Assessment Form", "💬 Live Knowledge Chat Interface"])
+# Interface Tabs
+tab1, tab2 = st.tabs(["📋 Clinical Lifestyle Assessment", "💬 Knowledge Chat Interrogator"])
 
 # =========================================================================
-# TAB 1: ASSESSMENT FORM & 7-DAY DIET MATRIX DISPLAY
+# TAB 1: PERSISTENT ASSESSMENT FORM
 # =========================================================================
 with tab1:
-    st.write("### 📝 Enter Personal Health Parameters")
+    st.write("### 📝 Patient Parameters Intake")
     
     with st.form("health_assessment_form"):
         col1, col2 = st.columns(2)
         with col1:
-            age_group = st.selectbox("👉 Select Your Age Group Bracket:", list(HEALTH_MATRIX.keys()))
-            sleep_hours = st.number_input("👉 Enter Daily Sleep Hours:", min_value=1, max_value=24, value=7, step=1)
+            age_group = st.selectbox("👉 Select Age Group Bracket:", list(BASE_NUTRITION.keys()))
+            diet_pref = st.selectbox("👉 Select Dietary Preference Segment:", ["Vegetarian", "Non-Vegetarian"])
+            sleep_hours = st.number_input("👉 Enter Patient Sleep Hours (Daily):", min_value=1, max_value=24, value=7, step=1)
         with col2:
-            health_issue = st.selectbox("👉 Select Underlying Primary Medical Concern:", list(CONDITION_ADVICE.keys()))
-            routine = st.selectbox("👉 Select Daily Activity Routine Classification:", ["Sedentary (Sitting all day)", "Moderate Active", "Heavy Active"])
-        
-        submit_button = st.form_submit_button(label="⚡ Execute Rules & Compile 7-Day Plan")
+            health_issue = st.selectbox("👉 Select Primary Medical Concern:", list(CLINICAL_RULES.keys()))
+            routine = st.selectbox("👉 Select Activity Profile Classification:", ["Sedentary", "Moderate Active", "Heavy Active"])
+            
+        submit_button = st.form_submit_button(label="⚡ Compile Demographically Modified Diet Plan")
 
     if submit_button:
-        base_data = HEALTH_MATRIX[age_group]
-        condition_data = CONDITION_ADVICE[health_issue]
+        # Generate personalized modified diet plan
+        result_plan = compile_clinical_diet_plan(age_group, diet_pref, health_issue)
         
         st.markdown("---")
-        st.markdown("## 📋 Your Rule-Driven Health & Lifestyle Blueprint")
+        st.markdown(f"## 📋 Rule-Driven Health & Lifestyle Blueprint ({diet_pref} - {health_issue})")
         
-        # Sleep logic check
-        sleep_comment = "✅ Your current sleep duration meets your age group criteria parameters."
-        if "to" in base_data["sleep_ideal"]:
-            ideal_min = int(base_data["sleep_ideal"].split()[0])
+        # Validate sleep ranges
+        sleep_comment = "✅ Current sleep duration satisfies demographic standards."
+        ideal_str = result_plan["sleep"]
+        if "to" in ideal_str:
+            ideal_min = int(ideal_str.split()[0])
             if sleep_hours < ideal_min:
-                sleep_comment = f"⚠️ Sleep Deficit Detected. Your profile target requires {base_data['sleep_ideal']}. Increase sleep duration."
-
+                sleep_comment = f"⚠️ Sleep Deficit Detected. Your group profile demands {ideal_str}. Increase duration."
+                
         # Display Metrics Blocks
         st.info(f"**⏰ Sleep Evaluation Status:** {sleep_comment}")
-        st.success(f"**🏃‍♂️ Prescribed Activity Matrix:** {base_data['exercise']}")
-        st.warning(condition_data)
+        st.success(f"**🏃‍♂️ Prescribed Activity Protocol:** {result_plan['exercise']}")
+        st.warning(result_plan["advice"])
         
-        st.markdown("### 🍛 Comprehensive 7-Day Diet Schedule")
-        st.write(f"To maximize dietary consistency, follow this macro-balanced structural template optimized for **{age_group}** dynamics:")
+        st.markdown("### 🍛 Modified 7-Day Clinical Diet Schedule")
+        st.write(f"The structural menus have been dynamically updated with specific clinical substitutions for **{age_group}** demands:")
         
-        # Build tabular structured matrix display 
+        # Build layout grid
         table_data = []
         for day in WEEK_DAYS:
-            meals = base_data["days"][day]
+            meals = result_plan["days"][day]
             table_data.append({
                 "Day Order": day,
                 "Breakfast Combo": meals["Breakfast"],
@@ -202,36 +372,30 @@ with tab1:
             })
             
         st.table(table_data)
-        st.error(f"🚫 **Strictly Avoid List:** {base_data['avoid']}")
+        st.error(f"🚫 **Strict Avoid List (Amended):** {result_plan['avoid']}")
 
 # =========================================================================
-# TAB 2: LIVE KNOWLEDGE CHAT INTERFACE
+# TAB 2: LIVE KNOWLEDGE CHAT
 # =========================================================================
 with tab2:
-    st.write("### 💬 Automated Chat Bot Interrogator")
-    st.caption("Ask specific health keyword metrics to parse advice (e.g., 'How to treat acidity?', 'Ragi benefits', 'Diabetes rules').")
-
-    # Initializing local state for running conversations
+    st.write("### 💬 Clinical Knowledge Bot")
+    st.caption("Ask specific metabolic or dietary questions (e.g., 'Diabetes guidelines', 'PCOD flaxseed benefits', 'BP rules').")
+    
     if "messages" not in st.session_state:
         st.session_state.messages = []
-
-    # Print prior history blocks
+        
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
-
-    # Chat execution engine logic
-    if prompt := st.chat_input("Ask a nutrition or lifestyle query here..."):
+            
+    if prompt := st.chat_input("Ask a clinical query..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
-
-        # Baseline fallback fallback if search regex breaks
-        bot_response = "🤖 I'm sorry, I couldn't map that specific phrase to a rule. Try terms like 'Gastric', 'BP', 'Diabetes', 'Thyroid', 'Millets', 'Sleep', or 'Weight Loss'."
+            
+        bot_response = "🤖 I am a clinical rule assistant. Try asking about 'Diabetes', 'PCOD', 'Fibroids', 'Migraine', or 'Stomach Pain' to trigger target guidelines."
         
         normalized_query = prompt.lower()
-        
-        # Scan dictionary tuples with a boundaries-safe regex search loop
         for key_tuple, descriptive_advice in EXTENDED_CHAT_RULES.items():
             if any(re.search(rf"\b{word}\b", normalized_query) for word in key_tuple):
                 bot_response = descriptive_advice
