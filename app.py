@@ -1,5 +1,3 @@
-
-```python
 import streamlit as st
 import re
 
@@ -523,4 +521,4 @@ with tab2:
             st.markdown(bot_response)
         st.session_state.messages.append({"role": "assistant", "content": bot_response})
 
-```
+
