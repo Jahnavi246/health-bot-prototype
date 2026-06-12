@@ -94,7 +94,7 @@ BASE_NUTRITION = {
                 "Thursday": {"Breakfast": "Finger millet flour soft upma with egg white crumbs.", "Lunch": "Mashed rice, curd, and boiled soft fish.", "Snack": "One ripe banana.", "Dinner": "Moong dal soup with a soft chicken idli."},
                 "Friday": {"Breakfast": "Warm ragi malt with egg whites.", "Lunch": "Soft rice, simple fish broth, and mashed carrot subzi.", "Snack": "Thin curd water.", "Dinner": "Oats porridge cooked in water with egg drop."},
                 "Saturday": {"Breakfast": "Soft-cooked vermicelli with egg white drop.", "Lunch": "Soft chapati mashed inside chicken stew.", "Snack": "Stewed pear.", "Dinner": "Little millet chicken khichdi cooked with extra water."},
-                "Sunday": {"Breakfast": "Moong dal chilla with soft chicken mince.", "Lunch": "Mashed rice, light chicken clear soup and curd.", "Snack": "Coconut water.", "Dinner": "Warm chicken stock soup with soft idli."}
+                "Sunday": {"Breakfast": "Moong dal green chilla (soft texturized) with chicken mince.", "Lunch": "Mashed rice, light chicken clear soup and curd.", "Snack": "Coconut water.", "Dinner": "Warm chicken stock soup with soft idli."}
             }
         }
     }
@@ -293,7 +293,7 @@ CLINICAL_PRIORITY = {
 # 3. CLINICAL DIET GENERATOR (MULTIPLE-SELECT CONFLICT RESOLUTION)
 # =========================================================================
 def compile_clinical_diet_plan(age, diet_pref, selected_issues):
-    # Fetch base demographic menu directly by age and diet preference (fixes previous loop error)
+    # Fetch base demographic menu directly by age and diet preference
     base = BASE_NUTRITION[age][diet_pref]
     
     # Clone to prevent modifying static dictionary reference
@@ -360,54 +360,172 @@ def compile_clinical_diet_plan(age, diet_pref, selected_issues):
 # =========================================================================
 EXTENDED_CHAT_RULES = {
     ("gastric", "acidity", "reflux", "gas", "bloating", "stomach pain", "motions", "vomiting", "nausea"): (
-        "### 🤢 Gastric, Reflux & Stomach Pain Relief\n"
-        "**🍛 Food Core:** Drink cold unsalted buttermilk with roasted cumin powder. Include alkaline ash gourd juice. Avoid raw red chili, citrus, and unsoaked heavy lentils.\n"
-        "**🏃‍♂️ Movement:** Practice *Vajrasana* for 5-10 minutes post-meal to support digestion.\n"
-        "**⏰ Rest:** Elevate head by 4 inches during sleep. Do not lie down within 2 hours of a meal."
+        "### 🤢 Gastric, Reflux & Stomach Pain Blueprint\n\n"
+        "**🌱 Relief Remedies:**\n"
+        "- Sip on cool, unsalted buttermilk spiced with fresh roasted cumin powder.\n"
+        "- Consume 100ml of raw alkaline ash gourd juice early in the morning.\n"
+        "- Boil 1 tsp of fennel seeds (saunf) in water, strain, and sip warm after lunch.\n\n"
+        "**🏃‍♂️ Exercise & Movement Strategy:**\n"
+        "- Practice **Vajrasana (Thunderbolt Pose)** for 5-10 minutes immediately after your main meals to promote peristalsis.\n"
+        "- Avoid core twist exercises, crunches, or heavy deadlifts which compress gastric cavities.\n\n"
+        "**🛌 Rest & Sleep Guidelines:**\n"
+        "- Elevate your torso by 4-6 inches during sleep using propped wedge pillows.\n"
+        "- Strictly avoid lying down flat on your back within 2-3 hours of eating."
     ),
     ("heart", "bp", "hypertension", "cardiovascular", "cholesterol", "heart attack"): (
-        "### 🫀 Hypertension & Cardiac Rehab\n"
-        "**🍛 Food Core:** Strictly restrict table salt. Avoid processed pickles, papads, and re-heated vegetable oils. Focus on potassium (coconut water, banana) and soluble beta-glucan fibers (oats).\n"
-        "**🏃‍♂️ Movement:** 30 minutes of low-impact walking. Strictly avoid sudden heavy strain.\n"
-        "**⏰ Rest:** Ensure 7-8 hours. Sleep deprivation spikes vascular cortisol levels."
+        "### 🫀 Hypertension & Cardiac Health Blueprint\n\n"
+        "**🌱 Relief Remedies:**\n"
+        "- Drink fresh, warm hibiscus tea which serves as a natural antioxidant and mild blood-vessel relaxer.\n"
+        "- Incorporate unheated cold-pressed garlic cloves crushed inside a teaspoon of raw organic honey.\n\n"
+        "**🏃‍♂️ Exercise & Movement Strategy:**\n"
+        "- Enjoy steady-state cardiovascular exercises like brisk walking or slow cycling for 30 minutes, 5 times a week.\n"
+        "- Strictly avoid high-intensity explosive training or prolonged breath-holding (valsalva maneuver) which spikes blood pressure.\n\n"
+        "**🛌 Rest & Sleep Guidelines:**\n"
+        "- Maintain a strict target of **8 hours of uninterrupted rest** daily to soothe the sympathetic nervous system."
     ),
     ("diabetes", "sugar", "glucose", "insulin"): (
-        "### 🩸 Diabetes & Insulin Regulation\n"
-        "**🍛 Food Core:** Replace refined white rice and maida with Jowar rotis or Foxtail Millet. Focus on high-fiber bitter vegetables (bitter gourd, okra, ivy gourd).\n"
-        "**🏃‍♂️ Movement:** Walk for 15 minutes immediately after main meals to sweep glucose out of the blood stream."
+        "### 🩸 Blood Glucose & Insulin Optimization Blueprint\n\n"
+        "**🌱 Relief Remedies:**\n"
+        "- Swallowing 1 teaspoon of soaked fenugreek (methi) seeds on an empty stomach supports healthy carbohydrate processing.\n"
+        "- Brew organic green tea flavored with cinnamon powder instead of artificial sweeteners.\n\n"
+        "**🏃‍♂️ Exercise & Movement Strategy:**\n"
+        "- **Post-Meal Walk:** Undertake a continuous 15-minute steady walk immediately following major meals to sweep glucose out of your bloodstream.\n"
+        "- Integrate moderate resistance training 3 times a week to improve muscle glycogen storage capacity.\n\n"
+        "**🛌 Rest & Sleep Guidelines:**\n"
+        "- Ensure a minimum of **7.5 hours of sleep** each night. Sleep restriction triggers cortisol production, compounding insulin resistance."
     ),
-    ("pcod", "pcos", "ovarian", "cyst", "irregular periods"): (
-        "### 🦋 PCOD & Ovarian Cyst Hormonal Recovery\n"
-        "**🍛 Food Core:** Adopt low-GI ancient grains. Strictly eliminate commercial dairy (IGF-1 triggers). Consume pumpkin and flaxseeds to clear systemic androgens.\n"
-        "**🏃‍♂️ Movement:** Moderate strength/resistance workouts 3 times a week to improve cellular insulin sensitivity."
+    ("pcod", "pcos", "ovarian", "irregular periods"): (
+        "### 🦋 PCOD & Hormonal Restoration Blueprint\n\n"
+        "**🌱 Relief Remedies:**\n"
+        "- Drink two cups of hot organic spearmint tea daily to reduce circular androgen levels.\n"
+        "- Mix 1 tablespoon of raw organic pumpkin and flaxseeds into breakfast routines to leverage lignans.\n\n"
+        "**🏃‍♂️ Exercise & Movement Strategy:**\n"
+        "- Prioritize progressive strength training or High-Intensity Interval Training (HIIT) 3 times a week to normalize insulin sensitivity.\n"
+        "- Perform pelvic-opening yoga postures like *Baddha Konasana* (Butterfly Pose) to stimulate ovarian blood flow.\n\n"
+        "**🛌 Rest & Sleep Guidelines:**\n"
+        "- Maintain a rigid circadian rhythm. Aim to sleep by 10:30 PM to optimize the release of luteinizing and follicle-stimulating hormones."
     ),
     ("fibroids", "uterine fibroids", "uterus", "heavy bleeding", "ribroids"): (
-        "### 🩸 Estrogen Detox & Fibroid Shrinkage\n"
-        "**🍛 Food Core:** Heavily consume cooked cruciferous greens (broccoli, cabbage, kale) to leverage Indole-3-Carbinol for liver estrogen binding. Strictly avoid red meat and full-fat dairy."
+        "### 🩸 Estrogen Detox & Fibroid Shrinkage Blueprint\n\n"
+        "**🌱 Relief Remedies:**\n"
+        "- Consume thoroughly steamed or fully cooked cruciferous greens (cabbage, broccoli) daily to boost liver indole-3-carbinol levels.\n"
+        "- Brew high-quality organic green tea which has been clinically linked to inhibiting fibroid tissue growth.\n\n"
+        "**🏃‍♂️ Exercise & Movement Strategy:**\n"
+        "- Participate in pelvic-circulatory exercises like mild swimming or gentle core stabilization stretches.\n"
+        "- Avoid deep, compressive lower abdominal crunch machines which might cause discomfort over active fibroids.\n\n"
+        "**🛌 Rest & Sleep Guidelines:**\n"
+        "- Sleep on your side with a pillow tucked between your knees to reduce pelvic drag and pressure. Aim for 8 hours of quiet rest."
     ),
-    ("headache", "migraine", "throbbing", "migraines"): (
-        "### 🧠 Headache & Migraine Trigger Elimination\n"
-        "**🍛 Food Core:** Purge vasoactive compounds (aged cheese, nitrites in processed meats, MSG, aspartame). Eat magnesium-heavy pumpkin and pumpkin seeds."
+    ("cyst", "ovarian cyst"): (
+        "### 🌸 Ovarian Cyst & Pelvic Comfort Blueprint\n\n"
+        "**🌱 Relief Remedies:**\n"
+        "- Place a warm castor-oil pack on your lower abdomen for 20 minutes to relieve pelvic cramping.\n"
+        "- Sip warm, soothing chamomile tea or ginger infusion twice daily.\n\n"
+        "**🏃‍♂️ Exercise & Movement Strategy:**\n"
+        "- Choose low-impact exercises like steady walking or gentle yoga flows.\n"
+        "- Strictly avoid high-impact jumping, core twists, or upside-down inversions if you have large cysts, to prevent ovarian torsion risk.\n\n"
+        "**🛌 Rest & Sleep Guidelines:**\n"
+        "- Rest your body completely during active flare-ups. Prop a small pillow under your lower back to relieve resting pelvic lumbar pressure."
     ),
-    ("thyroid", "hypothyroid", "tsh", "thyriod", "thypoid"): (
-        "### 🦋 Thyroid Metabolic Restoration\n"
-        "**🍛 Food Core:** Eat selenium-dense brazil nuts or walnuts. Avoid raw uncooked crucifers (cabbage, kale) to safeguard TPO enzymes. Eat cooked grains."
+    ("seizures", "fits", "epilepsy", "sizer", "fids"): (
+        "### 🧠 Neuro-Stability & Fits Prevention Blueprint\n\n"
+        "**🌱 Relief Remedies:**\n"
+        "- Keep blood sugars stable by eating meals rich in clean fats (soaked walnuts, pumpkin seeds) to feed brain cells ketone-based fuels.\n"
+        "- Avoid all foods containing MSG (monosodium glutamate) or high-fructose corn syrup which over-excite brain synapses.\n\n"
+        "**🏃‍♂️ Exercise & Movement Strategy:**\n"
+        "- Exercise with a partner in highly secure, low-risk environments (walking on flat ground, home-gym setups).\n"
+        "- Strictly avoid unsupervised deep-water swimming, open-road solo cycling, or heights to protect yourself if fits occur.\n\n"
+        "**🛌 Rest & Sleep Guidelines:**\n"
+        "- **Critical Warning:** Severe sleep deprivation is the absolute primary trigger for clinical fits. Enforce a non-negotiable **8 to 9 hours of strict nightly sleep**."
     ),
-    ("weight loss", "lose weight", "dieting", "fat loss"): (
-        "### 📉 Sustainable Caloric Deficit\n"
-        "**🍛 Food Core:** Consume unsweetened Ragi Java with buttermilk before meals to block mechanical overeating. Avoid evening refined snacks."
+    ("tb", "tuberculosis"): (
+        "### 🦠 Tuberculosis (TB) Lung & Weight Repair Blueprint\n\n"
+        "**🌱 Relief Remedies:**\n"
+        "- Sip warm goat milk or warm cow milk enriched with organic raw ginger and turmeric to soothe inflamed throat linings.\n"
+        "- Supplement daily meals with energy-dense elements (pure ghee, boiled egg whites, almond paste) to combat tissue wasting.\n\n"
+        "**🏃‍♂️ Exercise & Movement Strategy:**\n"
+        "- Active infection calls for complete rest. Limit physical workouts to soft joint rotations or gentle pranayama (alternate nostril breathing) to improve vital lung capacity.\n"
+        "- Avoid any exhausting cardiovascular tasks that accelerate heavy respiration.\n\n"
+        "**🛌 Rest & Sleep Guidelines:**\n"
+        "- Prioritize **9 to 10 hours** of resting recovery sleep. Lung tissues repair their cellular lining maximum during deep slumber."
     ),
-    ("seizures", "fits", "sizer", "fids"): (
-        "### 🧠 Neurotransmitter Stabilization (Seizures Protocol)\n"
-        "**🍛 Food Core:** Lower high-GI glucose spikes. Emphasize low-carb keto-friendly nutrition: high healthy fats (nuts, seeds) and balanced clean proteins. Avoid refined sugar and MSG."
+    ("malaria"): (
+        "### 🦟 Malaria Infection Care & Rehydration Blueprint\n\n"
+        "**🌱 Relief Remedies:**\n"
+        "- Drink fresh barley water, boiled apple puree, or light rice gruel to digest nutrients without taxing your liver.\n"
+        "- Maintain hydration with mineral-balanced oral rehydration salts (ORS) to replace high-fever electrolyte losses.\n\n"
+        "**🏃‍♂️ Exercise & Movement Strategy:**\n"
+        "- **Zero Exercise Protocol:** Confined to absolute bed rest during active malaria infection and the post-fever recovery phase.\n"
+        "- Passive joint stretching in bed is acceptable only once your baseline temperature settles.\n\n"
+        "**🛌 Rest & Sleep Guidelines:**\n"
+        "- Secure **10+ hours** of absolute bed rest. Avoid physical strain because your spleen may expand during malaria, making physical impacts dangerous."
     ),
-    ("tb", "tuberculosis", "chickenpox", "malaria"): (
-        "### 🦠 Acute Infectious Pathology Recovery (TB, Malaria, Chickenpox)\n"
-        "**🍛 Food Core:** Prioritize high-protein absorption and cellular repair. Drink cool, soft fluids for Chickenpox, and high-energy broths for TB and Malaria. Avoid raw heavy fiber."
+    ("chickenpox"): (
+        "### 🤒 Chickenpox Soothing & Lesion Care Blueprint\n\n"
+        "**🌱 Relief Remedies:**\n"
+        "- Take lukewarm oat-flour baths to naturally reduce intense skin itching and accelerate lesion dry-out.\n"
+        "- Sip cool coconut water or lysine-dense cold milk to soothe sores inside your mouth.\n\n"
+        "**🏃‍♂️ Exercise & Movement Strategy:**\n"
+        "- Absolutely no physical workouts. Confined to total rest until all lesions dry and crust over to prevent skin scarring.\n"
+        "- Gentle stretching in bed is allowed if your body aches are minimal.\n\n"
+        "**🛌 Rest & Sleep Guidelines:**\n"
+        "- Rest on highly breathable, soft, sanitized 100% cotton sheets. Keep your room cool to prevent sweat-induced rash irritation. Aim for 9-10 hours."
     ),
-    ("malnutrition", "weight gain", "cold", "cough"): (
-        "### 🌡️ Cold, Cough & Malnutrition Interventions\n"
-        "**🍛 Food Core:** Incorporate warm bone broths or spiced rasam infusions for respiratory issues. For malnutrition, provide ghee, honey, whole milk, and seed powders."
+    ("headache", "migraine"): (
+        "### 🧠 Migraine & Vascular Headache Management Blueprint\n\n"
+        "**🌱 Relief Remedies:**\n"
+        "- Apply an ice wrap or cool compress to your forehead or the back of your neck.\n"
+        "- Brew hot ginger-peppermint tea to reduce associated migraine nausea.\n"
+        "- Consume a handful of raw pumpkin seeds to boost your magnesium reserves.\n\n"
+        "**🏃‍♂️ Exercise & Movement Strategy:**\n"
+        "- Avoid fast-paced, high-impact activities that cause rapid heart-rate spikes.\n"
+        "- Perform slow, methodical head-and-neck releases, shoulder rolls, and gentle walking in dim environments.\n\n"
+        "**🛌 Rest & Sleep Guidelines:**\n"
+        "- Rest in a completely pitch-black, soundproof, cool room. Keep highly consistent sleep-wake times to prevent waking migraine triggers."
+    ),
+    ("thyroid", "hypothyroid", "tsh"): (
+        "### 🦋 Thyroid Metabolic Regulation Blueprint\n\n"
+        "**🌱 Relief Remedies:**\n"
+        "- Consume 2-3 selenium-rich organic walnuts daily to support active T4 to T3 thyroid hormone conversion.\n"
+        "- Brew organic ginger water to keep peripheral metabolism firing.\n\n"
+        "**🏃‍♂️ Exercise & Movement Strategy:**\n"
+        "- Focus on preserving muscle mass by performing low-impact strength training and yoga poses like *Sarvangasana* (Shoulder Stand) to stimulate thyroid circulation.\n"
+        "- Walk at a brisk pace for 30 minutes daily.\n\n"
+        "**🛌 Rest & Sleep Guidelines:**\n"
+        "- Go to bed before 10:30 PM to align with normal endocrine output. Get 8 hours of sleep to reduce stress-induced TSH spikes."
+    ),
+    ("weight loss", "lose weight"): (
+        "### 📉 Sustainable Weight Loss Blueprint\n\n"
+        "**🌱 Relief Remedies:**\n"
+        "- Drink 1 cup of warm ragi java mixed with thin buttermilk 20 minutes before core meals to curb heavy mechanical eating.\n"
+        "- Keep hydrating with cucumber slices, green tea, and warm water.\n\n"
+        "**🏃‍♂️ Exercise & Movement Strategy:**\n"
+        "- Combine full-body strength/weight training 3 times a week with a step goal of 8,000 to 10,000 steps daily.\n"
+        "- Squeeze in brief walks post-meals to prevent fat-storage insulin surges.\n\n"
+        "**🛌 Rest & Sleep Guidelines:**\n"
+        "- Secure **7.5 to 8.5 hours** of sleep. Rest deficit prompts the brain to produce more Ghrelin (the hunger hormone), making cravings difficult to stop."
+    ),
+    ("weight gain", "malnutrition"): (
+        "### 📈 Healthy Weight & Malnutrition Recovery Blueprint\n\n"
+        "**🌱 Relief Remedies:**\n"
+        "- Prepare warm, thick ragi porridge with organic cow milk, a drizzle of honey, and a blend of crushed walnuts and almonds.\n"
+        "- Snack on ghee-roasted organic makhana or soaked raisins.\n\n"
+        "**🏃‍♂️ Exercise & Movement Strategy:**\n"
+        "- Focus on slow weight-bearing resistance training (squats, light weights) to construct healthy muscle mass instead of storing empty fats.\n"
+        "- Limit exhausting cardiovascular cardio, which burns off required restorative calories.\n\n"
+        "**🛌 Rest & Sleep Guidelines:**\n"
+        "- Muscles rebuild and expand primarily during deep sleep. Prioritize **8.5 to 9 hours** of peaceful rest each night."
+    ),
+    ("cold", "cough", "running nose", "flu"): (
+        "### 🌡️ Respiratory Soothing & Cold/Cough Blueprint\n\n"
+        "**🌱 Relief Remedies:**\n"
+        "- Brew a warm tea using holy basil (Tulsi) leaves, crushed black pepper, fresh ginger, and a drop of honey.\n"
+        "- Perform deep steam inhalation with 2 drops of eucalyptus oil twice daily.\n"
+        "- Gargle warm saltwater twice daily to reduce throat irritation.\n\n"
+        "**🏃‍♂️ Exercise & Movement Strategy:**\n"
+        "- **The Neck Rule:** If your cold symptoms are strictly above the neck (mild runny nose), gentle walking is acceptable. If below the neck (fever, dry chest cough, severe body aches), rest completely.\n\n"
+        "**🛌 Rest & Sleep Guidelines:**\n"
+        "- Prop your chest and head up using multiple pillows to prevent nasal secretions from collecting in your airways. Target **9 hours of sleep**."
     )
 }
 
@@ -497,6 +615,17 @@ with tab2:
     st.write("### 💬 Clinical Knowledge Bot")
     st.caption("Ask specific metabolic, infection, or general health questions (e.g., 'Diabetes rules', 'fits advice', 'malaria food guidelines').")
     
+    # Custom instructions container to make the chatbot UI highly interactive
+    st.sidebar.markdown("### 💡 Quick Queries to Try:")
+    st.sidebar.info(
+        "👋 Try saying:\n"
+        "- *Hello!*\n"
+        "- *How to treat stomach pain?*\n"
+        "- *Give PCOD exercise advice*\n"
+        "- *Migraine relief remedies*\n"
+        "- *Malaria rest rules*"
+    )
+    
     if "messages" not in st.session_state:
         st.session_state.messages = []
         
@@ -512,13 +641,25 @@ with tab2:
         bot_response = "🤖 I am a clinical rule assistant. Try asking about 'Diabetes', 'PCOD', 'Fibroids', 'Seizures', 'Malaria', or 'TB' to trigger guidelines."
         
         normalized_query = prompt.lower()
-        for key_tuple, descriptive_advice in EXTENDED_CHAT_RULES.items():
-            if any(re.search(rf"\b{word}\b", normalized_query) for word in key_tuple):
-                bot_response = descriptive_advice
-                break
+        
+        # 1. Catch greetings explicitly first
+        greetings = [r"\bhello\b", r"\bhi\b", r"\bhey\b", r"\bgreetings\b", r"\bnamaste\b", r"\bgood morning\b", r"\bgood afternoon\b", r"\bgood evening\b"]
+        if any(re.search(pattern, normalized_query) for pattern in greetings):
+            bot_response = (
+                "👋 **Hello! Welcome to your Clinical Health Assistant.**\n\n"
+                "I am ready to help you with personalized health suggestions. You can ask me questions about any of the following topics:\n"
+                "- **Chronic Conditions:** Diabetes (Sugar), BP (Hypertension), Thyroid, PCOD, Ovarian Cysts, Fibroids, or Seizures (Fits).\n"
+                "- **Acute Issues:** Stomach pain, vomiting, motions, nausea, cold, cough, fever, TB, Malaria, or Chickenpox.\n"
+                "- **Fitness Goals:** Weight loss, Weight gain, or Malnutrition advice.\n\n"
+                "Please describe the symptoms or condition you want advice on, and I will give you customized **Remedies, Exercise, and Rest suggestions**!"
+            )
+        else:
+            # 2. Check clinical rule matches
+            for key_tuple, descriptive_advice in EXTENDED_CHAT_RULES.items():
+                if any(re.search(rf"\b{word}\b", normalized_query) for word in key_tuple):
+                    bot_response = descriptive_advice
+                    break
                 
         with st.chat_message("assistant"):
             st.markdown(bot_response)
         st.session_state.messages.append({"role": "assistant", "content": bot_response})
-
-
